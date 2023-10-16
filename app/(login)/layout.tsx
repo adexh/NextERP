@@ -4,12 +4,8 @@ import { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import AuthProvider from "@/components/auth-provider";
-import RecoilProvider from "@/components/recoil-provider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
-import Header from "@/components/header";
-import Sidebar from "@/components/sidebar/sidebar";
-import { Suspense } from "react";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -38,25 +34,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession(authOptions)
-  const role_id = session?.user.role as string;
 
   return (
     <html lang="en">
       <body className={inter.variable}>
         <Toaster />
-        <RecoilProvider>
-          <AuthProvider session={session}>
-            <div className="h-screen w-screen">
-              <Header />
-              <div className="flex">
-                <Suspense fallback={<>...Loading</>}>
-                  <Sidebar />
-                  {children}
-                </Suspense>
-              </div>
-            </div>
-          </AuthProvider>
-        </RecoilProvider>
+        <AuthProvider session={session}>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

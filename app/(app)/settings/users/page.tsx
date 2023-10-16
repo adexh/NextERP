@@ -1,8 +1,8 @@
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar/sidebar";
 import ReusableTable from "@/components/table";
-import Button from "@/components/ui/button";
 import { redirect } from "next/navigation";
+import Addbutton from "./add-button";
 
 export default function Settings() {
   const columns = [
@@ -47,28 +47,18 @@ export default function Settings() {
     { id: 6, name: 'Sarah Davis', email: 'sarah.davis@example.com', username: 'sarahd123', contact: '555-555-5555', activeStatus: true, role: 'User' }
   ];
 
-  const onclick = (e: React.MouseEvent<HTMLElement, MouseEvent>)=>{
-    redirect('/settings/users/add-users');
-  }
-
   return (
-    <div className="h-screen w-screen">
-      <Header />
-      <div className="flex">
-        <Sidebar />
-        <div className="bg-gray-100 flex-grow">
-          <div className="flex-col m-4 p-6 rounded-[20px] drop-shadow-md bg-white">
-            <div className="flex justify-end mr-2">
-              <Button label="Add" onclick={onclick}/>
-            </div>
-            <div>
-              <ReusableTable
-                columns={columns}
-                data={data}
-                pageSize={pageSize}
-              />
-            </div>
-          </div>
+    <div className="bg-gray-100 flex-grow">
+      <div className="flex-col m-4 p-6 rounded-[20px] drop-shadow-md bg-white">
+        <div className="flex justify-end mr-2">
+          <Addbutton />
+        </div>
+        <div>
+          <ReusableTable
+            columns={columns}
+            data={data}
+            pageSize={pageSize}
+          />
         </div>
       </div>
     </div>
