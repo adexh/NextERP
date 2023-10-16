@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model roles {
+  id            Int     @id @default(autoincrement())
+  role_name     String  @unique
+  active_status Boolean @default(true)
+  users         user[]
+  role_maps     role_modules_map[]
+}
+
+model user {
+  id            Int     @id @default(autoincrement())
+  f_name        String  @db.VarChar(200)
+  l_name        String  @db.VarChar(200)
+  username      String? @db.VarChar(200)
+  contact       String? @db.VarChar(16)
+  email         String  @unique
+  password      String  @db.VarChar(50)
+  org_email     String? @db.VarChar(100)
+  address       String? @db.Text
+  active_status Boolean @default(true)
+  role          roles   @relation(fields: [role_id], references: [id])
+  role_id       Int
+}
+
+model modules {
+  id            Int     @id @default(autoincrement())
+  module_name   String
+  parent_id     Int?
+  parent_module modules? @relation("parent_module",fields: [parent_id], references: [id])
+  child_modules modules[] @relation("parent_module")
+  path          String     @unique
+  icon          String     @unique
+  active_status Boolean
+  display_order Int     @default(0)
+  role_maps      role_modules_map[]
+}
+
+model role_modules_map {
+  id            Int     @id @default(autoincrement())
+  module        modules @relation(fields: [module_id], references: [id])
+  module_id     Int
+  role          roles   @relation(fields: [role_id], references: [id])
+  role_id       Int
+  active_status Boolean @default(true)
+}
