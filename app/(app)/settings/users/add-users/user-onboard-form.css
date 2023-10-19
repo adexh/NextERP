@@ -1,0 +1,7 @@
+.frm-input {
+  @apply bg-gray-200 h-8 rounded-[10px] mb-4 mr-8
+}
+
+.frm-label {
+  @apply mb-1 font-sans font-thin
+}

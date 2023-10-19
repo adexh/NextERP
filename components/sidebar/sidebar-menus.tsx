@@ -7,13 +7,14 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 const SidebarMenus = () => {
-  const pathname = usePathname()
+  let pathname = usePathname()
   console.log(pathname);
   
   const [loading, setLoading] = useState<boolean>(true);
 
   // const headersList = headers()
   // const pathname = headersList.get('x-pathname')?.split('/')[1];
+  pathname = "/"+pathname.split('/')[1];
 
   interface Imenu {
     module: {

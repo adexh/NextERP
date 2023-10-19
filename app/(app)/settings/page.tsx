@@ -1,10 +1,9 @@
-import Userbutton from "./user-button";
+import Button from "@/components/ui/button";
 
 export default function Settings() {
-
   return (
     <div className="flex-col m-20">
-      <Userbutton />
+      <Button label="User" redirects="/settings/users" />
     </div>
   );
 }

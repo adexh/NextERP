@@ -1,23 +1,10 @@
-import Header from "@/components/header";
-import Sidebar from "@/components/sidebar/sidebar";
-import ButtonWrapper from "@/components/ui/wrap-button";
+import Form from "./user-onboard-form";
 
 export default function Settings() {
-
   return (
-    <div className="h-screen w-screen">
-      <Header />
-      <div className="flex">
-        <Sidebar />
-        <div className="bg-gray-100 flex-grow">
-          <div className="flex-col m-4 p-6 rounded-[20px] drop-shadow-md bg-white">
-            <div className="flex justify-end mr-2">
-              <ButtonWrapper />
-            </div>
-            <div>
-            </div>
-          </div>
-        </div>
+    <div className="bg-gray-100 flex-grow">
+      <div className="flex-col m-4 p-6 rounded-[20px] mr-6 drop-shadow-md bg-white ">
+        <Form />
       </div>
     </div>
   );
