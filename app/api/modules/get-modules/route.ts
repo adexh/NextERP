@@ -12,49 +12,84 @@ export async function GET() {
   
   const role_id = session?.user.role;
 
-  const data = await prisma.role_modules_map.findMany({
+  const data = await prisma.modules.findMany({
     select: {
-      module: {
+      id:true,
+      module_name: true,
+      path: true,
+      icon: true,
+      child_modules: {
         select: {
+          id:true,
           module_name: true,
+          path: true,
+          icon: true,
           child_modules: {
             select: {
+              id:true,
               module_name: true,
               path: true,
               icon: true,
-              display_order: true
             },
             where: {
-              active_status:true
+              active_status: true,
+              role_maps: {
+                some: {
+                  role_id: parseInt(role_id),
+                  active_status: true,
+                }
+              }
+            },
+            orderBy: [
+              {
+                display_order: "asc"
+              },
+              {
+                module_name: "asc"
+              }
+            ]
+          }
+        },
+        where: {
+          active_status: true,
+          role_maps: {
+            some: {
+              role_id: parseInt(role_id),
+              active_status: true
             }
+          }
+        },
+        orderBy: [
+          {
+            display_order: "asc"
           },
-          path: true,
-          icon: true,
-          display_order: true
-        }
+          {
+            module_name: "asc"
+          }
+        ]
       }
     },
     where: {
-      role_id: parseInt(role_id),
-      module: {
-        parent_id: null,
-        active_status:true
+      active_status: true,
+      parent_id: null,
+      role_maps: {
+        some: {
+          role_id: parseInt(role_id),
+          active_status: true
+        }
       }
     },
     orderBy: [
       {
-        module:{
-          display_order:'asc'
-        }
+        display_order: "asc"
       },
       {
-        module:{
-          module_name:'asc'
-        }
+        module_name: "asc"
       }
     ]
   });
-  console.log("Get modules API Called");
+
+  console.log("Get modules API Called : ",JSON.stringify(data,null,2));
   
-  return Response.json(data);
+  return Response.json({module:data});
 }
