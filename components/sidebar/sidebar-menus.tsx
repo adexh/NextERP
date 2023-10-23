@@ -1,51 +1,44 @@
 "use client"
-import LoadingDots from "@/components/loading-dots";
-// import { getModules } from "./get-modules";
-// import { headers } from 'next/headers';
 import SidebarMenu from "./menu";
-import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import toast from "react-hot-toast";
+import { useRecoilState } from "recoil";
+import { modulesState, moduleLoadingState } from "atoms/modules-atom";
+import LoadingDots from "../loading-dots";
+import { useEffect } from "react";
 
 const SidebarMenus = () => {
   let pathname = usePathname()
-  console.log(pathname);
-  
-  const [loading, setLoading] = useState<boolean>(true);
 
-  // const headersList = headers()
-  // const pathname = headersList.get('x-pathname')?.split('/')[1];
-  pathname = "/"+pathname.split('/')[1];
+  const [ loading, setLoading ] = useRecoilState(moduleLoadingState);
 
-  interface Imenu {
-    module: {
-      module_name: string,
-      child_modules?: Imenu[],
-      path: string,
-      icon: string,
-      display_order: number
-    }
-  }
-  const [menus,setMenus] = useState<Imenu[]>()
+  pathname = "/" + pathname.split('/')[1];
+
+  const [menus, setMenus] = useRecoilState(modulesState);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/modules/get-modules")
-      const data: Imenu[] = await response.json();
-      console.log("Got data from API: ", data);
-      setLoading(false);
-      setMenus(data);
+      let response = null;
+      // let data: Imenu[];
+      try {
+        response = await fetch("/api/modules/get-modules");
+        const data = await response?.json();
+        setLoading(false);
+        setMenus(data);
+      } catch (error) {
+        console.log("Error from fetch  : ",error);
+        setLoading(false)
+        toast.error("Internal Server Error !");
+      }
     }
     fetchData();
-  }, [setMenus])
+  }, [setMenus,setLoading])
 
-  //const menus = await getModules();
-  // const loading = false;
-  
   let selected = menus?.findIndex(el => el.module.path == pathname);
 
   return <>
     {loading ?
-      <div className="w-full ">
+      <div className="w-full flex justify-center my-4">
         <LoadingDots color="#808080" />
       </div> :
       <>

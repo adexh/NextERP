@@ -52,3 +52,64 @@ model role_modules_map {
   role_id       Int
   active_status Boolean @default(true)
 }
+
+model clients {
+  id  Int @id @default(autoincrement())
+  login_id  Int?
+  first_name String
+  last_name   String
+  org_name    String?
+  contact     String
+  email       String?
+  address     String?
+  city        String?
+  state       String?
+  country     String?
+  pincode     String?
+  dob         String?
+  gender      String?
+  project_ids projects[]
+}
+
+model projects {
+  id    Int @id @default(autoincrement())
+  name  String
+  description String
+  start_date  DateTime
+  expected_start_date DateTime
+  expected_end_date DateTime
+  completion_status Int?
+  end_date    DateTime?
+  status      String @default(value:"Pending")
+  team_lead   Int?
+  budget      Int
+  actual_cost Int
+  issues      String?
+  notes       String?
+  documents   String[]
+  created_date  DateTime
+  last_updated_date DateTime
+  client   clients    @relation(fields: [client_id], references: [id])
+  client_id   Int
+}
+
+model employees {
+  id    Int @id @default(autoincrement())
+  login_id  Int?
+  first_name  String
+  last_name   String
+  email       String
+  org_email   String
+  contact     Int
+  address     String
+  city        String
+  state       String
+  country     String
+  pincode     String
+  dob         DateTime
+  gender      String
+  doj         DateTime
+  dor         DateTime?
+  designation String
+  salary_id   Int
+}

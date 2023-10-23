@@ -10,6 +10,9 @@ import { authOptions } from "../api/auth/[...nextauth]/route";
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar/sidebar";
 import { Suspense } from "react";
+import prisma from "@/lib/prisma";
+import { headers } from 'next/headers'
+import Unauthorized from "@/components/unauthorized";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -40,6 +43,25 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions)
   const role_id = session?.user.role as string;
 
+  const headersList = headers()
+  const pathname = headersList.get('x-pathname')?.split('/')[1];
+
+  const data = await prisma.role_modules_map.findFirst({
+    where: {
+      role_id: parseInt(role_id),
+      active_status: true,
+      module: {
+        path: pathname
+      }
+    }
+  });
+
+  let roleAuth = true;
+
+  if (data !== null || data !== undefined) {
+    roleAuth = false;
+  }
+
   return (
     <html lang="en">
       <body className={inter.variable}>
@@ -51,7 +73,10 @@ export default async function RootLayout({
               <div className="flex">
                 <Suspense fallback={<>...Loading</>}>
                   <Sidebar />
-                  {children}
+                  {roleAuth ?
+                    <Unauthorized /> :
+                    <>{children}</>
+                  }
                 </Suspense>
               </div>
             </div>

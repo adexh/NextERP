@@ -23,8 +23,7 @@ export default function Settings() {
   }, [menus, menusLoading])
 
   const cards = [{
-    title: "Users",
-    options: [{ label: "View Users", redirect: "/settings/users" }, { label: "Add User", redirect: "/settings/users/add-users" }]
+    title: "Clients"
   }];
 
   return (

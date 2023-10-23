@@ -23,6 +23,9 @@ export async function GET() {
               path: true,
               icon: true,
               display_order: true
+            },
+            where: {
+              active_status:true
             }
           },
           path: true,
@@ -34,18 +37,19 @@ export async function GET() {
     where: {
       role_id: parseInt(role_id),
       module: {
-        parent_id: null
+        parent_id: null,
+        active_status:true
       }
     },
     orderBy: [
       {
         module:{
-          module_name:'asc'
+          display_order:'asc'
         }
       },
       {
         module:{
-          display_order:'asc'
+          module_name:'asc'
         }
       }
     ]

@@ -24,7 +24,6 @@ export const authOptions: NextAuthOptions = {
             email,
           }
         });
-        console.log("User from provider : ",user);
         
         // if user doesn't exist or password doesn't match
         if (!user || !(password === user.password) ) {
@@ -37,6 +36,7 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   callbacks: {
     async jwt ({token, user}) {
+
       if (user) {
         return {
           ...token,
