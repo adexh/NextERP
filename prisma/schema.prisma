@@ -89,7 +89,7 @@ model projects {
   documents   String[]
   created_date  DateTime
   last_updated_date DateTime
-  client   clients    @relation(fields: [client_id], references: [id])
+  client   clients?    @relation(fields: [client_id], references: [id])
   client_id   Int
 }
 

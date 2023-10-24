@@ -1,4 +1,4 @@
-import OnBoardForm from "./user-onboard-form";
+import OnBoardForm from "./client-onboard-form";
 
 export default function Settings() {
 

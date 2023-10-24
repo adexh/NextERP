@@ -2,19 +2,18 @@
 import { atom } from "recoil";
 
 export interface ISubMenu {
+  id: number,
   module_name: string,
   path: string,
   icon: string,
-  display_order: number
+  child_modules?: ISubMenu[],
 }
 interface Imenu {
-  module: {
-    module_name: string,
-    child_modules?: ISubMenu[],
-    path: string,
-    icon: string,
-    display_order: number
-  }
+  id: number,
+  module_name: string,
+  path: string,
+  icon: string,
+  child_modules?: ISubMenu[],
 }
 
 
@@ -22,16 +21,13 @@ interface Imenu {
 
 export const modulesState = atom<Imenu[]>({
   key: "modules",
-  default: [
-    {
-      module: {
-        module_name: '',
-        child_modules: [],
-        path: '',
-        icon: '',
-        display_order: 0
-      }
-    }
+  default: [{
+    id: 0,
+    module_name: '',
+    child_modules: [],
+    path: '',
+    icon: ''
+  }
   ],
 });
 

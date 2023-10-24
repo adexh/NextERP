@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth/next";
 import prisma from "@/lib/prisma";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import { hash } from "bcrypt";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
         l_name: user.lname,
         contact: user.contact,
         email: user.email,
-        password: user.password,
+        password: await hash(user.password, 10),
         role_id: parseInt(user.role)
       }
     })

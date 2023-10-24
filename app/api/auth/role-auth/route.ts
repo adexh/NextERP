@@ -21,6 +21,8 @@ export async function POST(request: Request) {
       }
     }
   });
+  console.log("role auth ", data);
+  
   
   if( data !== null && data !== undefined ){
     return new Response("Authorized",{status:200});

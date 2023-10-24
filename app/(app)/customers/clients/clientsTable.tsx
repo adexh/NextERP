@@ -6,12 +6,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  paginate
 } from "@/components/ui/table"
 import Image from 'next/image';
 import { useEffect, useState } from "react";
-import { ChevronsLeft, ChevronsRight } from 'lucide-react';
-import { Input } from "@/components/ui/input";
 
 interface Icolumns {
   key: string
@@ -24,51 +21,43 @@ const columns: Icolumns[] = [
     label: "Id"
   },
   {
-    key: "f_name",
-    label: "Name"
+    key: "first_name",
+    label: "First Name"
+  },
+  {
+    key: "last_name",
+    label: "Last Name"
   },
   {
     key: "email",
     label: "Email"
   },
   {
-    key: "username",
-    label: "Username"
-  },
-  {
     key: "contact",
     label: "Contact"
   },
   {
-    key: "active_status",
-    label: "Active Status"
-  },
-  {
-    key: "role",
-    label: "Role"
+    key: "org_name",
+    label: "Org. Name"
   }
 ];
 
-const UserTable = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [data, setData] = useState([]);
+const ClientTable = () => {
+  const [ currentPage, setCurrentPage ] = useState(1);
+  const [ data, setData ] = useState([]);
 
-  useEffect(() => {
+  useEffect(()=>{
     const fetchTableData = async () => {
-      const data = await fetch("/api/users/getUsers");
+      const data = await fetch("/api/clients/getClients");
       let result = await data.json();
-
-      result.forEach((el: any) => {
-        el.role = el.role.role_name;
-      })
-
+      console.log(result);
+      
       setData(result);
     }
     fetchTableData();
-  }, [])
+  },[])
 
-  const pageSize = 4;
-  const pages = Math.ceil(data.length / pageSize);
+  const pageSize = 3;
 
   const handleNextPage = () => {
     setCurrentPage(currentPage + 1);
@@ -80,17 +69,9 @@ const UserTable = () => {
     }
   };
 
-  const prevDisabled = () => {
-    return currentPage == 1;
-  }
-
-  const nextDisabled = () => {
-    return currentPage == pages;
-  }
-
   const renderPageNumbers = () => {
-    let pageNumbers: any[] = [];
-    for (let i = 1; i <= pages; i++) {
+    const pageNumbers = [];
+    for (let i = 1; i <= pageSize; i++) {
       pageNumbers.push(
         <span
           key={i}
@@ -106,25 +87,20 @@ const UserTable = () => {
 
   return <>
     <div className="p-6">
-      <Table className="border-separate border-spacing-y-2">
-        <TableHeader >
+      <Table>
+        <TableHeader>
           <TableRow>
             {columns.map((col, index) => (
               <TableHead key={col.key}>{col.label}</TableHead>
             ))}
           </TableRow>
-          <TableRow className="mb-2">
-            {columns.map((col, index) => (
-              <TableHead key={col.key} className="px-3"><input type="text" className="px-1 h-8 w-full border-2 rounded-lg text-black" /></TableHead>
-            ))}
-          </TableRow>
         </TableHeader>
         <TableBody className="rounded-[20px] shadow">
-          {paginate(data, pageSize, currentPage).map((row: any) => (
+          {data.map((row: any) => (
             <TableRow key={row.id} className="odd:bg-gray-100">
               {columns.map(col => {
                 const value = row[col.key];
-                if (value === null) {
+                if(value === null){
                   return <>
                     <TableCell key={value}>-</TableCell>
                   </>
@@ -138,16 +114,16 @@ const UserTable = () => {
         </TableBody>
       </Table>
       <div className="mt-4 flex justify-end">
-        <button onClick={handlePrevPage} disabled={prevDisabled()} className="group">
-          <ChevronsLeft className="mx-2 group-disabled:text-gray-500" />
+        <button onClick={handlePrevPage}>
+          <Image src="/icons/chev-l.svg" alt="chev-left" width={20} height={10} className="mx-2" />
         </button>
         {renderPageNumbers()}
-        <button onClick={handleNextPage} disabled={nextDisabled()} className="group">
-          <ChevronsRight className="mx-2 group-disabled:text-gray-500" />
+        <button onClick={handleNextPage}>
+          <Image src="/icons/chev-r.svg" alt="chev-left" width={20} height={10} className="mx-2" />
         </button>
       </div>
     </div>
   </>
 }
 
-export default UserTable;
+export default ClientTable;

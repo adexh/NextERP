@@ -33,8 +33,11 @@ const SidebarMenus = () => {
     }
     fetchData();
   }, [setMenus,setLoading])
+  console.log(" ==================================== ",menus);
+  
 
-  let selected = menus?.findIndex(el => el.module.path == pathname);
+  let selected = menus.findIndex(el => el.path == pathname);
+  
 
   return <>
     {loading ?
@@ -43,7 +46,7 @@ const SidebarMenus = () => {
       </div> :
       <>
         {menus?.map((val, index: number) => {
-          return <SidebarMenu key={val.module.module_name} menu={val.module.module_name} path={val.module.path} icon={val.module.icon} selected={selected === index ? true : false} />
+          return <SidebarMenu key={val.module_name} menu={val.module_name} path={val.path} icon={val.icon} selected={selected === index ? true : false} />
         })}
       </>}
   </>

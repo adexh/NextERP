@@ -1,0 +1,3 @@
+.frm-div {
+  @apply flex flex-col mr-8 mb-4
+}

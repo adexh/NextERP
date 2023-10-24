@@ -2,6 +2,10 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+const paginate = (array: any[], page_size: number, page_number: number) => {
+  return array.slice((page_number - 1) * page_size, page_number * page_size);
+}
+
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
@@ -9,7 +13,7 @@ const Table = React.forwardRef<
   <div className="relative w-full overflow-auto">
     <table
       ref={ref}
-      className={cn("h-100 w-full", className)}
+      className={cn("h-100 w-full border-separate border-spacing-y-2 border-spacing-x-1", className)}
       {...props}
     />
   </div>
@@ -70,7 +74,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "font-normal text-start text-gray-400 px-4",
+      "font-normal text-start text-gray-600 px-4",
       className
     )}
     {...props}
@@ -111,4 +115,5 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  paginate
 }

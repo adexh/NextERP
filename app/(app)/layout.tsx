@@ -13,6 +13,7 @@ import { Suspense } from "react";
 import prisma from "@/lib/prisma";
 import { headers } from 'next/headers'
 import Unauthorized from "@/components/unauthorized";
+import Loading from "./loading";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -44,8 +45,8 @@ export default async function RootLayout({
   const role_id = session?.user.role as string;
 
   const headersList = headers()
-  const pathname = headersList.get('x-pathname')?.split('/')[1];
-
+  const pathname = "/" + headersList.get('x-pathname')?.split('/')[1];
+  
   const data = await prisma.role_modules_map.findFirst({
     where: {
       role_id: parseInt(role_id),
@@ -55,10 +56,10 @@ export default async function RootLayout({
       }
     }
   });
-
+  
   let roleAuth = true;
 
-  if (data !== null || data !== undefined) {
+  if (data !== null) {
     roleAuth = false;
   }
 
@@ -68,14 +69,16 @@ export default async function RootLayout({
         <Toaster />
         <RecoilProvider>
           <AuthProvider session={session}>
-            <div className="h-screen w-screen">
+            <div className="h-screen w-screen overflow-hidden">
               <Header />
               <div className="flex">
-                <Suspense fallback={<>...Loading</>}>
+                <Suspense fallback={<Loading/>}>
                   <Sidebar />
                   {roleAuth ?
                     <Unauthorized /> :
-                    <>{children}</>
+                    <div className="bg-gray-100 flex-grow overflow-y-auto overscroll-contain h-[calc(100vh-70px)]">
+                      {children}
+                    </div>
                   }
                 </Suspense>
               </div>

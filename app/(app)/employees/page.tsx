@@ -3,9 +3,8 @@ import Link from "next/link";
 import { useRecoilValue } from "recoil";
 import { moduleLoadingState, modulesState, ISubMenu } from "atoms/modules-atom";
 import { useEffect, useState } from "react";
-import LoadingDots from "@/components/loading-dots";
 
-export default function Settings() {
+export default function Employees() {
 
   const [subMenus, setSubmenus] = useState<ISubMenu[]>();
   const menus = useRecoilValue(modulesState);
@@ -13,7 +12,7 @@ export default function Settings() {
 
   useEffect(() => {
     if (!menusLoading) {
-      const idx = menus.findIndex(el => el.module_name == "Customers");
+      const idx = menus.findIndex(el => el.path == "/employees");
       if (idx != -1) {
         setSubmenus(menus[idx].child_modules)
         console.log(menus[idx].child_modules);
@@ -23,7 +22,7 @@ export default function Settings() {
   }, [menus, menusLoading])
 
   const cards = [{
-    title: "Clients"
+    title: "Employees"
   }];
 
   return (

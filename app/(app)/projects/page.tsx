@@ -13,7 +13,7 @@ export default function Settings() {
 
   useEffect(() => {
     if (!menusLoading) {
-      const idx = menus.findIndex(el => el.module_name == "Customers");
+      const idx = menus.findIndex(el => el.path == "/projects");
       if (idx != -1) {
         setSubmenus(menus[idx].child_modules)
         console.log(menus[idx].child_modules);
@@ -23,7 +23,7 @@ export default function Settings() {
   }, [menus, menusLoading])
 
   const cards = [{
-    title: "Clients"
+    title: "Projects"
   }];
 
   return (

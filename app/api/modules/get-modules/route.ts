@@ -91,5 +91,5 @@ export async function GET() {
 
   console.log("Get modules API Called : ",JSON.stringify(data,null,2));
   
-  return Response.json({module:data});
+  return Response.json(data);
 }
