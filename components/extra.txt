@@ -1,0 +1,74 @@
+Below is the code For Form to select multiple options in a dropdown, and there'll be label below to display the selected values
+
+
+
+HTML:-
+<div className="frm-div">
+              <FormField
+                control={form.control}
+                name="projects"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Projects</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="w-[200px] justify-between text-gray-500 font-normal"
+                          >
+                            {"Add Project"}
+                            <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[200px] p-0">
+                        <Command>
+                          <CommandInput
+                            placeholder="Search Project..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No Project found.</CommandEmpty>
+                          <CommandGroup>
+                            {projects.map((project) => {
+                              const projectExist = !!form.getValues("projects").find(el => el.id === project.id);
+                              return <CommandItem
+                                value={project.id.toString()}
+                                key={project.id}
+                                disabled={projectExist}
+                                onSelect={() => {
+                                  form.setValue("projects", [...form.getValues("projects"), project])
+                                }}
+                                className={cn(projectExist ? " text-gray-500" : "")}
+                              >
+                                {project.label}
+                                <CheckIcon
+                                  className={cn(
+                                    "ml-auto h-4 w-4", projectExist ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                              </CommandItem>
+                            })}
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                    <FormDescription>
+                    </FormDescription>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div>
+              {form.watch("projects").map(el => {
+                return <>
+                  <Badge key={el.id} className="mr-1">
+                    <X onClick={() => form.setValue("projects", form.getValues("projects").filter(val => val.id !== el.id ))}
+                      className="h-5 w-5 mr-1"
+                    />{el.label}
+                  </Badge>
+                </>
+              })}
+            </div>

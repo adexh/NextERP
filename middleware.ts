@@ -10,11 +10,6 @@ export default async function middleware(req: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  //@ts-ignore
-  const role = session.role;
-  console.log("From middleware : ", typeof role, role);
-
-
   if (session && path === "/login") {
     return NextResponse.redirect(new URL(`/`, req.url));
   }

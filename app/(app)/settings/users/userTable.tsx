@@ -15,7 +15,8 @@ import { Input } from "@/components/ui/input";
 
 interface Icolumns {
   key: string
-  label: string
+  label: string,
+  filterValue?: string
 }
 
 const columns: Icolumns[] = [
@@ -52,6 +53,7 @@ const columns: Icolumns[] = [
 const UserTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
+  const [filteredData, setfilteredData] = useState(data);
 
   useEffect(() => {
     const fetchTableData = async () => {
@@ -61,8 +63,8 @@ const UserTable = () => {
       result.forEach((el: any) => {
         el.role = el.role.role_name;
       })
-
       setData(result);
+      setfilteredData(result);
     }
     fetchTableData();
   }, [])
@@ -104,6 +106,29 @@ const UserTable = () => {
     return pageNumbers;
   };
 
+  const filterHandler = (e: React.FormEvent<HTMLInputElement>, ind: number) => {
+    let currVal = e.currentTarget.value.toString().toLowerCase();
+    columns[ind].filterValue = currVal;
+
+    setfilteredData(data.filter(el => {
+      let cellData = el[columns[ind].key] as string
+      cellData = cellData?.toString().toLowerCase();
+
+      return columns.every((col,index)=>{
+        let filterVal = col.filterValue;
+
+        if(filterVal && filterVal !== ""){
+          let currCellData = el[col.key] as string;
+          currCellData = currCellData?.toString().toLowerCase();
+          return index == ind ? cellData?.startsWith(currVal) : currCellData.startsWith(filterVal);
+
+        } else {
+          return true;
+        }
+      })
+    }))
+  }
+
   return <>
     <div className="p-6">
       <Table className="border-separate border-spacing-y-2">
@@ -115,12 +140,12 @@ const UserTable = () => {
           </TableRow>
           <TableRow className="mb-2">
             {columns.map((col, index) => (
-              <TableHead key={col.key} className="px-3"><input type="text" className="px-1 h-8 w-full border-2 rounded-lg text-black" /></TableHead>
+              <TableHead key={col.key} className="px-3"><input type="text" className="px-1 h-8 w-full border-2 rounded-lg text-black" onInput={e => filterHandler(e, index)} /></TableHead>
             ))}
           </TableRow>
         </TableHeader>
         <TableBody className="rounded-[20px] shadow">
-          {paginate(data, pageSize, currentPage).map((row: any) => (
+          {paginate(filteredData, pageSize, currentPage).map((row: any) => (
             <TableRow key={row.id} className="odd:bg-gray-100">
               {columns.map(col => {
                 const value = row[col.key];

@@ -1,5 +1,5 @@
 "use client"
-import Button from "@/components/ui/button";
+import Button from "@/components/ui/button2";
 import ClientTable from "./clientsTable";
 import { useSession } from "next-auth/react";
 

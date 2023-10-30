@@ -1,7 +1,9 @@
 "use client"
-import Button from "@/components/ui/button";
+import Button from "@/components/ui/button2";
 import UserTable from "./userTable";
 import { useSession } from "next-auth/react";
+import { Suspense } from "react";
+import Loading from "@/components/loading";
 
 export default function Settings() {
 
@@ -13,7 +15,9 @@ export default function Settings() {
         <Button label="Add User" redirects="/settings/users/add-users" />
       </div>
       <div>
-        <UserTable />
+        {/* <Suspense fallback={<Loading />}> */}
+          <UserTable />
+        {/* </Suspense> */}
       </div>
     </div>
   );

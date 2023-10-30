@@ -1,7 +1,6 @@
 import { getServerSession } from "next-auth/next";
 import prisma from "@/lib/prisma";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -88,8 +87,6 @@ export async function GET() {
       }
     ]
   });
-
-  console.log("Get modules API Called : ",JSON.stringify(data,null,2));
   
   return Response.json(data);
 }

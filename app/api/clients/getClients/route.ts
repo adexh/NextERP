@@ -11,7 +11,6 @@ export async function GET() {
   if(!session || session.user.role != "1"){
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
-  const role_id = session?.user.role;
 
   let data = await prisma.clients.findMany({
     select: {

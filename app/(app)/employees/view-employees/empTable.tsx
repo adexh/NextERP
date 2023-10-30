@@ -37,8 +37,8 @@ const columns: Icolumns[] = [
     label: "Contact"
   },
   {
-    key: "org_name",
-    label: "Org. Name"
+    key: "designation",
+    label: "Designation"
   }
 ];
 
@@ -48,7 +48,7 @@ const EmpTable = () => {
 
   useEffect(()=>{
     const fetchTableData = async () => {
-      const data = await fetch("/api/clients/getClients");
+      const data = await fetch("/api/employees/getEmployees");
       let result = await data.json();
       console.log(result);
       

@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form";
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import Button from "@/components/ui/button";
+import Button from "@/components/ui/button2";
 import "./user-onboard-form.css"
 
 // For Radio Group

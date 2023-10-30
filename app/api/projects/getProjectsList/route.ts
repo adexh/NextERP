@@ -12,23 +12,10 @@ export async function GET() {
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
 
-  let data = await prisma.user.findMany({
-    where:{
-      active_status:true
-    },
+  let data = await prisma.projects.findMany({
     select: {
       id:true,
-      f_name:true,
-      l_name:true,
-      contact:true,
-      email:true,
-      username:true,
-      active_status:true,
-      role:{
-        select:{
-          role_name:true
-        }
-      }
+      name: true
     }
   });
   

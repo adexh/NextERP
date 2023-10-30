@@ -13,7 +13,7 @@ import { Suspense } from "react";
 import prisma from "@/lib/prisma";
 import { headers } from 'next/headers'
 import Unauthorized from "@/components/unauthorized";
-import Loading from "./loading";
+import Loading from "../../components/loading";
 
 const inter = Inter({
   variable: "--font-inter",

@@ -55,7 +55,7 @@ model role_modules_map {
 
 model clients {
   id  Int @id @default(autoincrement())
-  login_id  Int?
+  login_id  Int? @unique
   first_name String
   last_name   String
   org_name    String?
@@ -69,13 +69,15 @@ model clients {
   dob         String?
   gender      String?
   project_ids projects[]
+
+  @@unique([first_name, last_name])
 }
 
 model projects {
   id    Int @id @default(autoincrement())
   name  String
   description String
-  start_date  DateTime
+  start_date  DateTime?
   expected_start_date DateTime
   expected_end_date DateTime
   completion_status Int?

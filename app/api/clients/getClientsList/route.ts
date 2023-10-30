@@ -8,29 +8,20 @@ export async function GET() {
   if(!session){
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
-  if(!session || session.user.role != "1"){
-    return Response.json({error: 'Unauthorized Access!'}, {status:401})
-  }
 
-  let data = await prisma.user.findMany({
-    where:{
-      active_status:true
-    },
+  let data = await prisma.clients.findMany({
     select: {
       id:true,
-      f_name:true,
-      l_name:true,
-      contact:true,
-      email:true,
-      username:true,
-      active_status:true,
-      role:{
-        select:{
-          role_name:true
-        }
-      }
+      
+      first_name:true,
+      last_name:true,
     }
   });
+  data.forEach(el=>{
+    //Manipulation for Frontend
+    //@ts-expect-error
+    el["name"] = el.first_name + " " + el.last_name;
+  })
   
   return Response.json(data);
 }

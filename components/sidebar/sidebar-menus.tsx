@@ -33,7 +33,6 @@ const SidebarMenus = () => {
     }
     fetchData();
   }, [setMenus,setLoading])
-  console.log(" ==================================== ",menus);
   
 
   let selected = menus.findIndex(el => el.path == pathname);

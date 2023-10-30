@@ -21,24 +21,24 @@ const columns: Icolumns[] = [
     label: "Id"
   },
   {
-    key: "first_name",
-    label: "First Name"
+    key: "name",
+    label: "Project Name"
   },
   {
-    key: "last_name",
-    label: "Last Name"
+    key: "description",
+    label: "Description"
   },
   {
-    key: "email",
-    label: "Email"
+    key: "start_date",
+    label: "Start Date"
   },
   {
-    key: "contact",
-    label: "Contact"
+    key: "completion_status",
+    label: "Completion Status"
   },
   {
-    key: "org_name",
-    label: "Org. Name"
+    key: "status",
+    label: "Project Status"
   }
 ];
 
@@ -48,7 +48,7 @@ const ClientTable = () => {
 
   useEffect(()=>{
     const fetchTableData = async () => {
-      const data = await fetch("/api/clients/getClients");
+      const data = await fetch("/api/projects/getProjects");
       let result = await data.json();
       console.log(result);
       
