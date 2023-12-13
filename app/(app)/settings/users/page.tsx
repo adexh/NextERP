@@ -12,7 +12,7 @@ export default function Settings() {
   return (
     <div className="flex-col m-4 p-6 mr-6 rounded-[20px] drop-shadow-md bg-white">
       <div className="flex justify-end mr-2">
-        <Button label="Add User" redirects="/settings/users/add-users" />
+        <Button label="Add User" redirects="/settings/add-users" />
       </div>
       <div>
         {/* <Suspense fallback={<Loading />}> */}

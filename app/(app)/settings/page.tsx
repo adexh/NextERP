@@ -24,7 +24,7 @@ export default function Settings() {
 
   const cards = [{
     title: "Users",
-    options: [{ label: "View Users", redirect: "/settings/users" }, { label: "Add User", redirect: "/settings/users/add-users" }]
+    options: [{ label: "View Users", redirect: "/settings/users" }, { label: "Add User", redirect: "/settings/add-users" }]
   }];
 
   return (

@@ -6,6 +6,46 @@ const paginate = (array: any[], page_size: number, page_number: number) => {
   return array.slice((page_number - 1) * page_size, page_number * page_size);
 }
 
+const renderPageNumbers = (pages: number,setCurrentPage: any, currentPage: number) => {
+  let pageNumbers: any[] = [];
+  for (let i = 1; i <= pages; i++) {
+    pageNumbers.push(
+      <span
+        key={i}
+        onClick={() => setCurrentPage(i)}
+        style={{ cursor: 'pointer', margin: '0 5px', textDecoration: i === currentPage ? 'underline' : 'none' }}
+      >
+        {i}
+      </span>
+    );
+  }
+  return pageNumbers;
+};
+
+const filterHandler = (e: React.FormEvent<HTMLInputElement>, ind: number, columns: Icolumns[], data: any[], setfilteredData: any) => {
+  let currVal = e.currentTarget.value.toString().toLowerCase();
+  columns[ind].filterValue = currVal;
+
+  setfilteredData(data.filter(el => {
+    let cellData = el[columns[ind].key] as string
+    cellData = cellData?.toString().toLowerCase();
+
+    return columns.every((col,index)=>{
+      let filterVal = col.filterValue;
+
+      if(filterVal && filterVal !== ""){
+        let currCellData = el[col.key] as string;
+        currCellData = currCellData?.toString().toLowerCase();
+        return index == ind ? cellData?.startsWith(currVal) : currCellData.startsWith(filterVal);
+
+      } else {
+        return true;
+      }
+    })
+  }))
+}
+
+
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
@@ -115,5 +155,7 @@ export {
   TableRow,
   TableCell,
   TableCaption,
-  paginate
+  paginate,
+  renderPageNumbers,
+  filterHandler
 }

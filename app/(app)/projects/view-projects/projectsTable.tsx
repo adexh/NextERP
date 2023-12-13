@@ -6,14 +6,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  paginate,
+  renderPageNumbers,
+  filterHandler
 } from "@/components/ui/table"
 import Image from 'next/image';
 import { useEffect, useState } from "react";
-
-interface Icolumns {
-  key: string
-  label: string
-}
 
 const columns: Icolumns[] = [
   {
@@ -45,6 +43,7 @@ const columns: Icolumns[] = [
 const ClientTable = () => {
   const [ currentPage, setCurrentPage ] = useState(1);
   const [ data, setData ] = useState([]);
+  const [filteredData, setfilteredData] = useState(data);
 
   useEffect(()=>{
     const fetchTableData = async () => {
@@ -53,11 +52,13 @@ const ClientTable = () => {
       console.log(result);
       
       setData(result);
+      setfilteredData(result);
     }
     fetchTableData();
   },[])
 
-  const pageSize = 3;
+  const pageSize = 4;
+  const pages = Math.ceil(data.length / pageSize);
 
   const handleNextPage = () => {
     setCurrentPage(currentPage + 1);
@@ -69,22 +70,6 @@ const ClientTable = () => {
     }
   };
 
-  const renderPageNumbers = () => {
-    const pageNumbers = [];
-    for (let i = 1; i <= pageSize; i++) {
-      pageNumbers.push(
-        <span
-          key={i}
-          onClick={() => setCurrentPage(i)}
-          style={{ cursor: 'pointer', margin: '0 5px', textDecoration: i === currentPage ? 'underline' : 'none' }}
-        >
-          {i}
-        </span>
-      );
-    }
-    return pageNumbers;
-  };
-
   return <>
     <div className="p-6">
       <Table>
@@ -94,9 +79,14 @@ const ClientTable = () => {
               <TableHead key={col.key}>{col.label}</TableHead>
             ))}
           </TableRow>
+          <TableRow className="mb-2">
+            {columns.map((col, index) => (
+              <TableHead key={col.key} className="px-3"><input type="text" className="px-1 h-8 w-full border-2 rounded-lg text-black" onInput={e => filterHandler(e, index, columns, data, setfilteredData)} /></TableHead>
+            ))}
+          </TableRow>
         </TableHeader>
         <TableBody className="rounded-[20px] shadow">
-          {data.map((row: any) => (
+          {paginate(filteredData, pageSize, currentPage).map((row: any) => (
             <TableRow key={row.id} className="odd:bg-gray-100">
               {columns.map(col => {
                 const value = row[col.key];
@@ -114,11 +104,11 @@ const ClientTable = () => {
         </TableBody>
       </Table>
       <div className="mt-4 flex justify-end">
-        <button onClick={handlePrevPage}>
+        <button onClick={handlePrevPage} disabled={currentPage==1}>
           <Image src="/icons/chev-l.svg" alt="chev-left" width={20} height={10} className="mx-2" />
         </button>
-        {renderPageNumbers()}
-        <button onClick={handleNextPage}>
+        {renderPageNumbers(pages, setCurrentPage, currentPage)}
+        <button onClick={handleNextPage} disabled={currentPage==pages}>
           <Image src="/icons/chev-r.svg" alt="chev-left" width={20} height={10} className="mx-2" />
         </button>
       </div>

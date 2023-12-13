@@ -6,18 +6,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  paginate
+  paginate,
+  renderPageNumbers,
+  filterHandler
 } from "@/components/ui/table"
-import Image from 'next/image';
 import { useEffect, useState } from "react";
 import { ChevronsLeft, ChevronsRight } from 'lucide-react';
-import { Input } from "@/components/ui/input";
 
-interface Icolumns {
-  key: string
-  label: string,
-  filterValue?: string
-}
+import { useRouter } from 'next/navigation'
 
 const columns: Icolumns[] = [
   {
@@ -55,6 +51,8 @@ const UserTable = () => {
   const [data, setData] = useState([]);
   const [filteredData, setfilteredData] = useState(data);
 
+  const router = useRouter();
+
   useEffect(() => {
     const fetchTableData = async () => {
       const data = await fetch("/api/users/getUsers");
@@ -82,53 +80,6 @@ const UserTable = () => {
     }
   };
 
-  const prevDisabled = () => {
-    return currentPage == 1;
-  }
-
-  const nextDisabled = () => {
-    return currentPage == pages;
-  }
-
-  const renderPageNumbers = () => {
-    let pageNumbers: any[] = [];
-    for (let i = 1; i <= pages; i++) {
-      pageNumbers.push(
-        <span
-          key={i}
-          onClick={() => setCurrentPage(i)}
-          style={{ cursor: 'pointer', margin: '0 5px', textDecoration: i === currentPage ? 'underline' : 'none' }}
-        >
-          {i}
-        </span>
-      );
-    }
-    return pageNumbers;
-  };
-
-  const filterHandler = (e: React.FormEvent<HTMLInputElement>, ind: number) => {
-    let currVal = e.currentTarget.value.toString().toLowerCase();
-    columns[ind].filterValue = currVal;
-
-    setfilteredData(data.filter(el => {
-      let cellData = el[columns[ind].key] as string
-      cellData = cellData?.toString().toLowerCase();
-
-      return columns.every((col,index)=>{
-        let filterVal = col.filterValue;
-
-        if(filterVal && filterVal !== ""){
-          let currCellData = el[col.key] as string;
-          currCellData = currCellData?.toString().toLowerCase();
-          return index == ind ? cellData?.startsWith(currVal) : currCellData.startsWith(filterVal);
-
-        } else {
-          return true;
-        }
-      })
-    }))
-  }
-
   return <>
     <div className="p-6">
       <Table className="border-separate border-spacing-y-2">
@@ -140,22 +91,17 @@ const UserTable = () => {
           </TableRow>
           <TableRow className="mb-2">
             {columns.map((col, index) => (
-              <TableHead key={col.key} className="px-3"><input type="text" className="px-1 h-8 w-full border-2 rounded-lg text-black" onInput={e => filterHandler(e, index)} /></TableHead>
+              <TableHead key={col.key} className="px-3"><input type="text" className="px-1 h-8 w-full border-2 rounded-lg text-black" onInput={e => filterHandler(e, index, columns, data, setfilteredData)} /></TableHead>
             ))}
           </TableRow>
         </TableHeader>
         <TableBody className="rounded-[20px] shadow">
           {paginate(filteredData, pageSize, currentPage).map((row: any) => (
-            <TableRow key={row.id} className="odd:bg-gray-100">
+            <TableRow key={row.id} className="odd:bg-gray-100" onClick={() => router.push("users/"+row.id.toString())}>
               {columns.map(col => {
                 const value = row[col.key];
-                if (value === null) {
-                  return <>
-                    <TableCell key={value}>-</TableCell>
-                  </>
-                }
                 return <>
-                  <TableCell key={value}>{value?.toString()}</TableCell>
+                  <TableCell key={value}>{value?value.toString():"-"}</TableCell>
                 </>
               })}
             </TableRow>
@@ -163,11 +109,11 @@ const UserTable = () => {
         </TableBody>
       </Table>
       <div className="mt-4 flex justify-end">
-        <button onClick={handlePrevPage} disabled={prevDisabled()} className="group">
+        <button onClick={handlePrevPage} disabled={currentPage == 1} className="group">
           <ChevronsLeft className="mx-2 group-disabled:text-gray-500" />
         </button>
-        {renderPageNumbers()}
-        <button onClick={handleNextPage} disabled={nextDisabled()} className="group">
+        {renderPageNumbers(pages, setCurrentPage, currentPage)}
+        <button onClick={handleNextPage} disabled={currentPage == pages} className="group">
           <ChevronsRight className="mx-2 group-disabled:text-gray-500" />
         </button>
       </div>
