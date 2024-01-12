@@ -9,9 +9,9 @@ datasource db {
 }
 
 model roles {
-  id            Int     @id @default(autoincrement())
-  role_name     String  @unique
-  active_status Boolean @default(true)
+  id            Int                @id @default(autoincrement())
+  role_name     String             @unique
+  active_status Boolean            @default(true)
   users         user[]
   role_maps     role_modules_map[]
 }
@@ -32,16 +32,27 @@ model user {
 }
 
 model modules {
-  id            Int     @id @default(autoincrement())
+  id            Int                @id @default(autoincrement())
   module_name   String
   parent_id     Int?
-  parent_module modules? @relation("parent_module",fields: [parent_id], references: [id])
-  child_modules modules[] @relation("parent_module")
-  path          String     @unique
-  icon          String     @unique
+  parent_module modules?           @relation("parent_module", fields: [parent_id], references: [id])
+  child_modules modules[]          @relation("parent_module")
+  path          String             @unique
+  icon          String             @unique
   active_status Boolean
-  display_order Int     @default(0)
-  role_maps      role_modules_map[]
+  display_order Int                @default(0)
+  role_maps     role_modules_map[]
+  group         module_group?       @relation(fields: [group_id], references: [id])
+  group_id      Int?
+}
+
+model module_group {
+  id            Int       @id @default(autoincrement())
+  group_name    String
+  icon          String    @unique
+  active_status Boolean
+  display_order Int       @default(0)
+  modules       modules[]
 }
 
 model role_modules_map {
@@ -54,9 +65,9 @@ model role_modules_map {
 }
 
 model clients {
-  id  Int @id @default(autoincrement())
-  login_id  Int? @unique
-  first_name String
+  id          Int        @id @default(autoincrement())
+  login_id    Int?       @unique
+  first_name  String
   last_name   String
   org_name    String?
   contact     String
@@ -74,30 +85,30 @@ model clients {
 }
 
 model projects {
-  id    Int @id @default(autoincrement())
-  name  String
-  description String
-  start_date  DateTime?
+  id                  Int       @id @default(autoincrement())
+  name                String
+  description         String
+  start_date          DateTime?
   expected_start_date DateTime
-  expected_end_date DateTime
-  completion_status Int?
-  end_date    DateTime?
-  status      String @default(value:"Pending")
-  team_lead   Int?
-  budget      Int
-  actual_cost Int
-  issues      String?
-  notes       String?
-  documents   String[]
-  created_date  DateTime
-  last_updated_date DateTime
-  client   clients?    @relation(fields: [client_id], references: [id])
-  client_id   Int
+  expected_end_date   DateTime
+  completion_status   Int?
+  end_date            DateTime?
+  status              String    @default(value: "Pending")
+  team_lead           Int?
+  budget              Int
+  actual_cost         Int
+  issues              String?
+  notes               String?
+  documents           String[]
+  created_date        DateTime
+  last_updated_date   DateTime
+  client              clients?  @relation(fields: [client_id], references: [id])
+  client_id           Int
 }
 
 model employees {
-  id    Int @id @default(autoincrement())
-  login_id  Int?
+  id          Int       @id @default(autoincrement())
+  login_id    Int?
   first_name  String
   last_name   String
   email       String
