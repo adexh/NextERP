@@ -16,6 +16,11 @@ const UserSection = () => {
 
   const options: Option[] = [
     {
+      label: "View Profile",
+      onClickHandle: () => {},
+      iconPath: "/icons/profile-circle-svgrepo-com.svg"
+    },
+    {
       label: "Logout",
       onClickHandle: () => {
         signOut();

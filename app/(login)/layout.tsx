@@ -12,9 +12,9 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const title = "WATT Dashboard";
+const title = "NextHRM Dashboard";
 const description =
-  "This is a Next.js starter kit that uses Next-Auth for simple email + password login and a Postgres database to persist the data.";
+  "This is an HRM made from NEXTJs";
 
 export const metadata: Metadata = {
   title,
