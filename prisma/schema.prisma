@@ -37,8 +37,8 @@ model modules {
   parent_id     Int?
   parent_module modules?           @relation("parent_module", fields: [parent_id], references: [id])
   child_modules modules[]          @relation("parent_module")
-  path          String             @unique
-  icon          String             @unique
+  path          String?             @unique
+  icon          String?             @unique
   active_status Boolean
   display_order Int                @default(0)
   role_maps     role_modules_map[]

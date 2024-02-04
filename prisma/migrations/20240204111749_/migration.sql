@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "modules" ALTER COLUMN "icon" DROP NOT NULL,
+ALTER COLUMN "path" DROP NOT NULL;

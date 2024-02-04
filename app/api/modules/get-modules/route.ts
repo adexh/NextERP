@@ -23,6 +23,7 @@ export async function GET() {
           module_name: true,
           path: true,
           icon: true,
+          group: true,
           child_modules: {
             select: {
               id:true,
@@ -87,6 +88,7 @@ export async function GET() {
       }
     ]
   });
+  console.log(JSON.stringify(data,null,2));
   
   return Response.json(data);
 }
