@@ -17,6 +17,7 @@ export async function GET() {
     select: {
       id:true,
       role_name:true,
+      active_status:true
     },
     where:{
       active_status:true

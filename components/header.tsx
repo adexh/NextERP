@@ -1,5 +1,7 @@
+"use client"
 import Image from "next/image"
 import {Button} from "./ui/button"
+import { signOut } from "next-auth/react"
 
 export default function Header() {
   return <>
@@ -9,7 +11,7 @@ export default function Header() {
         <h2 className=" text-3xl md:ml-10">NextERP</h2>
       </div>
       <div className="mx-5">
-        <Button variant={"ghost"} >
+        <Button variant={"ghost"} onClick={() => signOut()}>
           <Image alt="icon" src={"/icons/logout.svg"} width={20} height={20} priority className="mr-2"/>
           Logout</Button>
       </div>

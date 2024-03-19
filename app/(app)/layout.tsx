@@ -1,3 +1,4 @@
+"use-client"
 // These styles apply to every route in the application
 import "@/styles/globals.css";
 import { Metadata } from "next";
@@ -42,27 +43,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession(authOptions)
-  const role_id = session?.user.role as string;
 
   const headersList = headers()
   const pathname = "/" + headersList.get('x-pathname')?.split('/')[1];
   
-  const data = await prisma.role_modules_map.findFirst({
-    where: {
-      role_id: parseInt(role_id),
-      active_status: true,
-      module: {
-        path: pathname
-      }
-    }
-  });
-  
-  let roleAuth = true;
-
-  if (data !== null) {
-    roleAuth = false;
-  }
-
   return (
     <html lang="en">
       <body className={inter.variable}>
@@ -74,12 +58,12 @@ export default async function RootLayout({
               <div className="flex">
                 <Suspense fallback={<Loading/>}>
                   <Sidebar />
-                  {roleAuth ?
+                  {/* {roleAuth ?
                     <Unauthorized /> :
                     <div className="bg-gray-100 flex-grow overflow-y-auto overscroll-contain h-[calc(100vh-70px)]">
                       {children}
                     </div>
-                  }
+                  } */}
                 </Suspense>
               </div>
             </div>

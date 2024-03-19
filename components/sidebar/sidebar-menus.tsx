@@ -22,6 +22,7 @@ const SidebarMenus = () => {
       // let data: Imenu[];
       try {
         response = await fetch("/api/modules/get-modules");
+        console.log("Response from fetch : ", response);
         const data = await response?.json();
         setLoading(false);
         setMenus(data);

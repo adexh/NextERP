@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Form from "@/components/form";
+import Form from "@/app/(login)/login/form";
 import Link from "next/link";
 
 export default function Login() {
@@ -22,7 +22,7 @@ export default function Login() {
             Use your email and password to sign in
           </p>
         </div>
-        <Form type="login" />
+        <Form />
       </div>
     </div>
   );
