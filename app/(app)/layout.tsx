@@ -1,4 +1,3 @@
-"use-client"
 // These styles apply to every route in the application
 import "@/styles/globals.css";
 import { Metadata } from "next";
@@ -46,7 +45,7 @@ export default async function RootLayout({
 
   const headersList = headers()
   const pathname = "/" + headersList.get('x-pathname')?.split('/')[1];
-  
+
   return (
     <html lang="en">
       <body className={inter.variable}>
@@ -56,14 +55,11 @@ export default async function RootLayout({
             <div className="h-screen w-screen overflow-hidden">
               <Header />
               <div className="flex">
-                <Suspense fallback={<Loading/>}>
+                <Suspense fallback={<Loading />}>
                   <Sidebar />
-                  {/* {roleAuth ?
-                    <Unauthorized /> :
-                    <div className="bg-gray-100 flex-grow overflow-y-auto overscroll-contain h-[calc(100vh-70px)]">
-                      {children}
-                    </div>
-                  } */}
+                  <div className="bg-gray-100 flex-grow overflow-y-auto overscroll-contain h-[calc(100vh-70px)]">
+                    {children}
+                  </div>
                 </Suspense>
               </div>
             </div>

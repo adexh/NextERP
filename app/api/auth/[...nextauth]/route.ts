@@ -1,4 +1,4 @@
-import NextAuth, { type NextAuthOptions } from "next-auth";
+import NextAuth, { User, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GitHubProvider from "next-auth/providers/github";
 import EmailProvider from "next-auth/providers/email";
@@ -6,12 +6,30 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
 import prisma from "@/lib/prisma";
 import toast from "react-hot-toast";
+import { AdapterUser } from "next-auth/adapters";
 
 export interface GithubEmail extends Record<string, any> {
   email: string
   primary: boolean
   verified: boolean
   visibility: "public" | "private"
+}
+
+const getModuleUrls = async (user: AdapterUser|User) => {
+  const data = await prisma.role_modules_map.findMany({
+    select: {
+      module: {
+        select: {
+          path: true
+        }
+      }
+    },
+    where: {
+      role_id: user.role_id,
+      active_status: true
+    }
+  })
+  return data.map(d => d.module.path)
 }
 
 export const authOptions: NextAuthOptions = {
@@ -44,16 +62,15 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
-      console.log("USER");
-      console.log(user);
-      
       if (user) {
+        const urls = await getModuleUrls(user);
         return {
           ...token,
           f_name: user.f_name,
           l_name: user.l_name,
           role: user.role_id,
           profileComplete: user.profileComplete,
+          urls: urls
         }
       }
       return token
@@ -61,8 +78,9 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token, user }) {
       session.user.f_name = token.f_name as string;
       session.user.l_name = token.l_name as string;
-      session.user.role = token.role as number
+      session.user.role_id = token.role as number
       session.user.profileComplete = token.profileComplete as boolean
+      session.user.urls = token.urls as string[]
       return session
     }
   },

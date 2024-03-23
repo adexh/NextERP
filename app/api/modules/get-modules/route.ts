@@ -9,7 +9,7 @@ export async function GET() {
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
   
-  const role_id = session?.user.role;
+  const role_id = session?.user.role_id;
 
   const data = await prisma.modules.findMany({
     select: {
@@ -88,7 +88,6 @@ export async function GET() {
       }
     ]
   });
-  console.log(JSON.stringify(data,null,2));
   
   return Response.json(data);
 }
