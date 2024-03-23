@@ -10,11 +10,22 @@ export default async function middleware(req: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  if (session && path === "/login") {
+  if (session && path === '/login'  ) {
     return NextResponse.redirect(new URL(`/`, req.url));
+  }
+  if( session && !session.profileComplete && path !== '/register_details') {
+    return NextResponse.redirect(new URL(`/register_details`, req.url));
   }
   if (!session && path !== "/login") {
     return NextResponse.redirect(new URL(`/login`, req.url));
+  }
+
+  
+  const pathsToExclude = new RegExp(/!.svg/);
+
+  // @ts-ignore
+  if( pathsToExclude.test(path) && !session.urls.includes(path) ) {
+    return NextResponse.redirect(new URL(`/access-denied`, req.url));
   }
 
   requestHeaders.set('x-pathname', req.nextUrl.pathname);
@@ -26,5 +37,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };

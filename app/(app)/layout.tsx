@@ -42,26 +42,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession(authOptions)
-  const role_id = session?.user.role as string;
 
   const headersList = headers()
   const pathname = "/" + headersList.get('x-pathname')?.split('/')[1];
-  
-  const data = await prisma.role_modules_map.findFirst({
-    where: {
-      role_id: parseInt(role_id),
-      active_status: true,
-      module: {
-        path: pathname
-      }
-    }
-  });
-  
-  let roleAuth = true;
-
-  if (data !== null) {
-    roleAuth = false;
-  }
 
   return (
     <html lang="en">
@@ -72,14 +55,11 @@ export default async function RootLayout({
             <div className="h-screen w-screen overflow-hidden">
               <Header />
               <div className="flex">
-                <Suspense fallback={<Loading/>}>
+                <Suspense fallback={<Loading />}>
                   <Sidebar />
-                  {roleAuth ?
-                    <Unauthorized /> :
-                    <div className="bg-gray-100 flex-grow overflow-y-auto overscroll-contain h-[calc(100vh-70px)]">
-                      {children}
-                    </div>
-                  }
+                  <div className="bg-gray-100 flex-grow overflow-y-auto overscroll-contain h-[calc(100vh-70px)]">
+                    {children}
+                  </div>
                 </Suspense>
               </div>
             </div>

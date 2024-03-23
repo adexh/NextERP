@@ -88,7 +88,6 @@ export async function GET() {
       }
     ]
   });
-  console.log(JSON.stringify(data,null,2));
   
   return Response.json(data);
 }

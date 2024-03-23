@@ -22,7 +22,7 @@ const renderPageNumbers = (pages: number,setCurrentPage: any, currentPage: numbe
   return pageNumbers;
 };
 
-const filterHandler = (e: React.FormEvent<HTMLInputElement>, ind: number, columns: Icolumns[], data: any[], setfilteredData: any) => {
+const filterHandler = (e: React.FormEvent<HTMLInputElement>, ind: number, columns: Icolumns[], data: any[], setfilteredData: any, sortDirection?: String) => {
   let currVal = e.currentTarget.value.toString().toLowerCase();
   columns[ind].filterValue = currVal;
 
@@ -43,6 +43,39 @@ const filterHandler = (e: React.FormEvent<HTMLInputElement>, ind: number, column
       }
     })
   }))
+}
+
+const sortHandler = (column: any, data: any[], setfilteredData: any, sortDirection?: String) => {
+  console.log("column : ",column);
+  
+  if (sortDirection) {
+    setfilteredData(data.sort((a, b) => {
+      console.log(" a:",a);
+      console.log(" b:",b);
+      
+      
+      const valA = a[column.key];
+      const valB = b[column.key];
+
+      // const valA = a
+      // const valB = b
+
+      if (sortDirection === 'asc') {
+        if (valA < valB) return -1;
+        if (valA > valB) return 1;
+        return 0;
+      } else if (sortDirection === 'desc') {
+        console.log(valA > valB);
+        console.log(valA < valB);
+        
+        if (valA > valB) return -1;
+        if (valA < valB) return 1;
+        return 0;
+      } else {
+        return 0;
+      }
+    }));
+  }
 }
 
 
@@ -157,5 +190,6 @@ export {
   TableCaption,
   paginate,
   renderPageNumbers,
-  filterHandler
+  filterHandler,
+  sortHandler
 }

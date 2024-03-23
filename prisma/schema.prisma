@@ -2,6 +2,25 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Account {
+  id                 String  @id @default(cuid())
+  userId             Int
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("POSTGRES_URL") // uses connection pooling
@@ -18,19 +37,38 @@ model roles {
 
 model user {
   id            Int     @id @default(autoincrement())
-  f_name        String  @db.VarChar(200)
-  l_name        String  @db.VarChar(200)
+  f_name        String?  @db.VarChar(200)
+  l_name        String?  @db.VarChar(200)
   username      String? @db.VarChar(200)
   contact       String? @db.VarChar(16)
   email         String  @unique
-  password      String  @db.VarChar(50)
+  emailVerified DateTime?
+  password      String?  @db.VarChar(50)
   org_email     String? @db.VarChar(100)
   address       String? @db.Text
   active_status Boolean @default(true)
-  role          roles   @relation(fields: [role_id], references: [id])
-  role_id       Int
+  role          roles?   @relation(fields: [role_id], references: [id])
+  role_id       Int?
+  accounts      Account[]
+  sessions      Session[]
+  profileComplete Boolean @default(false)
 }
 
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
 model modules {
   id            Int                @id @default(autoincrement())
   module_name   String
