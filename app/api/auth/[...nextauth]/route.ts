@@ -25,7 +25,7 @@ const getModuleUrls = async (user: AdapterUser|User) => {
       }
     },
     where: {
-      role_id: user.role_id,
+      role_id: user.role,
       active_status: true
     }
   })
@@ -78,7 +78,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token, user }) {
       session.user.f_name = token.f_name as string;
       session.user.l_name = token.l_name as string;
-      session.user.role_id = token.role as number
+      session.user.role = token.role as number
       session.user.profileComplete = token.profileComplete as boolean
       session.user.urls = token.urls as string[]
       return session
