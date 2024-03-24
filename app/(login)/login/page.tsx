@@ -10,7 +10,6 @@ export default function Login() {
           <Link href="/">
             <Image
               src="/logo.png"
-              priority
               alt="Logo"
               className="w-20"
               width={80}
