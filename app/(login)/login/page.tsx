@@ -12,7 +12,6 @@ export default function Login() {
               src="/logo.png"
               priority
               alt="Logo"
-              className="w-20"
               width={80}
               height={60}
             />
