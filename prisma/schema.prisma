@@ -57,6 +57,8 @@ model user {
   as_client       clients?  @relation("UserAsClient")
   clients         clients[] @relation("UserClients")
   employees       employees[]
+  projects        projects[] //Projects owned by the user
+  client_projects  projects[] @relation("ClientProjects") // Projects shared with the clients
 }
 
 model Session {
@@ -136,12 +138,11 @@ model clients {
   pincode           String?
   dob               String?
   gender            String?
-  project_ids       projects[]
 }
 
 model projects {
   id                  Int       @id @default(autoincrement())
-  name                String
+  name                String    @unique
   description         String
   start_date          DateTime?
   expected_start_date DateTime
@@ -157,8 +158,10 @@ model projects {
   documents           String[]
   created_date        DateTime
   last_updated_date   DateTime
-  client              clients?  @relation(fields: [client_id], references: [id])
-  client_id           Int
+  user_id             Int?    //Owner of the project
+  user                user?     @relation(fields: [user_id], references: [id])
+  employees           employees[] //Employees having access to the project
+  clients             user[]  @relation("ClientProjects") // Clients of a project
 }
 
 model employees {
@@ -182,4 +185,5 @@ model employees {
   dor         DateTime?
   designation String
   salary_id   Int
+  projects    projects[]  //Projects assigned to employee
 }
