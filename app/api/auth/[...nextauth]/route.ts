@@ -51,6 +51,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
       profile(profile) {
         return {
+          id: profile.id,
           email: profile.email,
           f_name: profile.name.split(" ")[0] ?? profile.login.split(" ")[0],
           l_name: profile.name.split(" ")[1] ?? profile.login.split(" ")[1]
