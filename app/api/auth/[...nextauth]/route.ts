@@ -51,7 +51,6 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
       profile(profile) {
         return {
-          id: profile.id,
           email: profile.email,
           f_name: profile.name.split(" ")[0] ?? profile.login.split(" ")[0],
           l_name: profile.name.split(" ")[1] ?? profile.login.split(" ")[1]
@@ -66,6 +65,7 @@ export const authOptions: NextAuthOptions = {
         const urls = await getModuleUrls(user);
         return {
           ...token,
+          id: user.id,
           f_name: user.f_name,
           l_name: user.l_name,
           role: user.role_id,
@@ -76,6 +76,7 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token, user }) {
+      session.user.id = token.id as number;
       session.user.f_name = token.f_name as string;
       session.user.l_name = token.l_name as string;
       session.user.role = token.role as number

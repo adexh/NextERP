@@ -10,7 +10,7 @@ export default function Settings() {
   return (
     <div className=" m-4 p-6 mr-6 rounded-[20px] drop-shadow-md bg-white">
       <div className="flex justify-end mr-2">
-        <Button label="Add Client" redirects="/customers/clients/add-client" />
+        <Button label="Add Employee" redirects="/employees/add-employee" />
       </div>
       <div>
         <EmpTable />

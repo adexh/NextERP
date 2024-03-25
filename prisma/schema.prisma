@@ -3,18 +3,18 @@ generator client {
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             Int
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user user @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -33,25 +33,32 @@ model roles {
   active_status Boolean            @default(true)
   users         user[]
   role_maps     role_modules_map[]
+  backendPermissions BackendPermission[]
 }
 
 model user {
-  id            Int     @id @default(autoincrement())
-  f_name        String?  @db.VarChar(200)
-  l_name        String?  @db.VarChar(200)
-  username      String? @db.VarChar(200)
-  contact       String? @db.VarChar(16)
-  email         String  @unique
-  emailVerified DateTime?
-  password      String?  @db.VarChar(50)
-  org_email     String? @db.VarChar(100)
-  address       String? @db.Text
-  active_status Boolean @default(true)
-  role          roles?   @relation(fields: [role_id], references: [id])
-  role_id       Int?
-  accounts      Account[]
-  sessions      Session[]
-  profileComplete Boolean @default(false)
+  id              Int       @id @default(autoincrement())
+  f_name          String?   @db.VarChar(200)
+  l_name          String?   @db.VarChar(200)
+  username        String?   @db.VarChar(200)
+  contact         String?   @db.VarChar(16)
+  email           String    @unique
+  emailVerified   DateTime?
+  password        String?   @db.VarChar(50)
+  org_email       String?   @db.VarChar(100)
+  address         String?   @db.Text
+  active_status   Boolean   @default(true)
+  role            roles?    @relation(fields: [role_id], references: [id])
+  role_id         Int?
+  accounts        Account[]
+  sessions        Session[]
+  profileComplete Boolean   @default(false)
+  as_client_id    Int?      @unique
+  as_client       clients?  @relation("UserAsClient")
+  clients         clients[] @relation("UserClients")
+  employees       employees[]
+  projects        projects[] //Projects owned by the user
+  client_projects  projects[] @relation("ClientProjects") // Projects shared with the clients
 }
 
 model Session {
@@ -69,18 +76,19 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
 model modules {
   id            Int                @id @default(autoincrement())
   module_name   String
   parent_id     Int?
   parent_module modules?           @relation("parent_module", fields: [parent_id], references: [id])
   child_modules modules[]          @relation("parent_module")
-  path          String?             @unique
-  icon          String?             @unique
+  path          String?            @unique
+  icon          String?            @unique
   active_status Boolean
   display_order Int                @default(0)
   role_maps     role_modules_map[]
-  group         module_group?       @relation(fields: [group_id], references: [id])
+  group         module_group?      @relation(fields: [group_id], references: [id])
   group_id      Int?
 }
 
@@ -102,29 +110,39 @@ model role_modules_map {
   active_status Boolean @default(true)
 }
 
-model clients {
-  id          Int        @id @default(autoincrement())
-  login_id    Int?       @unique
-  first_name  String
-  last_name   String
-  org_name    String?
-  contact     String
-  email       String?
-  address     String?
-  city        String?
-  state       String?
-  country     String?
-  pincode     String?
-  dob         String?
-  gender      String?
-  project_ids projects[]
+model BackendPermission {
+  id           Int               @id @default(autoincrement())
+  endpoint     String            @unique
+  method       String
+  role         roles             @relation(fields: [roleId], references: [id])
+  roleId       Int
+  active_status Boolean          @default(true)
+}
 
-  @@unique([first_name, last_name])
+model clients {
+  id                Int        @id @default(autoincrement())
+  service_provider_ids Int[]   
+  service_providers user[]     @relation("UserClients")
+  user_id           Int?       @unique
+  user              user?      @relation("UserAsClient", fields: [user_id], references: [id])
+  login_id          Int?       @unique
+  first_name        String
+  last_name         String
+  org_name          String?
+  contact           String
+  email             String?
+  address           String?
+  city              String?
+  state             String?
+  country           String?
+  pincode           String?
+  dob               String?
+  gender            String?
 }
 
 model projects {
   id                  Int       @id @default(autoincrement())
-  name                String
+  name                String    @unique
   description         String
   start_date          DateTime?
   expected_start_date DateTime
@@ -140,12 +158,16 @@ model projects {
   documents           String[]
   created_date        DateTime
   last_updated_date   DateTime
-  client              clients?  @relation(fields: [client_id], references: [id])
-  client_id           Int
+  user_id             Int?    //Owner of the project
+  user                user?     @relation(fields: [user_id], references: [id])
+  employees           employees[] //Employees having access to the project
+  clients             user[]  @relation("ClientProjects") // Clients of a project
 }
 
 model employees {
   id          Int       @id @default(autoincrement())
+  employer_id Int?
+  employer    user?     @relation(fields: [employer_id],references: [id])
   login_id    Int?
   first_name  String
   last_name   String
@@ -163,4 +185,5 @@ model employees {
   dor         DateTime?
   designation String
   salary_id   Int
+  projects    projects[]  //Projects assigned to employee
 }

@@ -2,15 +2,22 @@ import { getServerSession } from "next-auth/next";
 import prisma from "@/lib/prisma";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { Prisma } from "@prisma/client";
+import { NextRequest } from "next/server";
+import hasPermission from "@/lib/utils/api_role_auth";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   
-  if(!session || session.user.role != "1"){
+  if(!session){
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
+
+  const auth = await hasPermission(session, request);
+  if( session.user.email == null || session.user.email ==undefined || auth ) {
+    return Response.json({error: 'Unauthorized Access!'}, {status:401})
+  }
+
   const employee = await request.json();
-  console.debug("Employee from Form : ", employee);
 
   try {
     const data = await prisma.employees.create({
@@ -26,11 +33,14 @@ export async function POST(request: Request) {
         state: employee.state,
         country: employee.country,
         pincode: employee.pincode,
-        dob: employee.dob,
-        doj: employee.doj,
-        dor: employee.dor,
+        dob: employee.dob? new Date(employee.dob) : "",
+        doj: employee.doj? new Date(employee.doj) : "",
+        dor: employee.dor? new Date(employee.dor) : "",
         designation: employee.designation,
-        salary_id: 1
+        salary_id: 1,
+        employer: {
+          connect: {id:session.user.id}
+        }
       }
     })
   } catch (error) {

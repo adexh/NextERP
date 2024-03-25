@@ -2,11 +2,18 @@ import { getServerSession } from "next-auth/next";
 import prisma from "@/lib/prisma";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { Prisma } from "@prisma/client";
+import hasPermission from "@/lib/utils/api_role_auth";
+import { NextRequest } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   
-  if(!session || session.user.role != "1"){
+  if(!session){
+    return Response.json({error: 'Unauthorized Access!'}, {status:401})
+  }
+
+  const auth = await hasPermission(session, request);
+  if( session.user.email == null || session.user.email ==undefined || auth ) {
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
   const project = await request.json();
@@ -26,11 +33,7 @@ export async function POST(request: Request) {
         notes: project.notes,
         created_date: new Date(),
         last_updated_date: new Date(),
-        client:{
-          connect: {
-            id: project.client
-          }
-        }
+        user_id: session.user.id
       }
     })
   } catch (error) {
