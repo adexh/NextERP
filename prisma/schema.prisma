@@ -56,6 +56,7 @@ model user {
   as_client_id    Int?      @unique
   as_client       clients?  @relation("UserAsClient")
   clients         clients[] @relation("UserClients")
+  employees       employees[]
 }
 
 model Session {
@@ -136,8 +137,6 @@ model clients {
   dob               String?
   gender            String?
   project_ids       projects[]
-
-  @@unique([first_name, last_name])
 }
 
 model projects {
@@ -164,6 +163,8 @@ model projects {
 
 model employees {
   id          Int       @id @default(autoincrement())
+  employer_id Int?
+  employer    user?     @relation(fields: [employer_id],references: [id])
   login_id    Int?
   first_name  String
   last_name   String
