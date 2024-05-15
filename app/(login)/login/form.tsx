@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import LoadingDots from "@/components/loading-dots";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Github } from "lucide-react";
+import { Github, Mail } from "lucide-react";
 
 export default function Form() {
   const [loading, setLoading] = useState(false);
@@ -59,7 +59,7 @@ export default function Form() {
         {loading ? (
           <LoadingDots color="#808080" />
         ) : (
-          <p>Sign In with Email</p>
+          <p><span className="flex justify-center items-center"><Mail className="mr-2" />Next</span></p>
         )}
       </button>
       <div className="relative flex py-2 items-center">
