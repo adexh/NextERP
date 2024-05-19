@@ -16,15 +16,12 @@ export default async function middleware(req: NextRequest) {
   if( session && !session.profileComplete && path !== '/register_details') {
     return NextResponse.redirect(new URL(`/register_details`, req.url));
   }
-  if (!session && path !== "/login") {
+  if (!session && !path.startsWith("_next") && path !== "/login") {
     return NextResponse.redirect(new URL(`/login`, req.url));
   }
 
-  
-  const pathsToExclude = new RegExp(/!.svg/);
-
   // @ts-ignore
-  if( pathsToExclude.test(path) && !session.urls.includes(path) ) {
+  if( session && !session.urls.includes(path) ) {
     return NextResponse.redirect(new URL(`/access-denied`, req.url));
   }
 
