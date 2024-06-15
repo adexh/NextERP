@@ -3,7 +3,6 @@ import "@/styles/globals.css";
 import { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
-import AuthProvider from "@/components/auth-provider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
@@ -39,9 +38,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.variable}>
         <Toaster />
-        <AuthProvider session={session}>
-          {children}
-        </AuthProvider>
+            {children}
       </body>
     </html>
   );
