@@ -20,11 +20,12 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(`/login`, req.url));
   }
 
+  const pathsToExclude = new RegExp(/!.svg/);
+
   // @ts-ignore
-  if( session && !session.urls.includes(path) ) {
+  if( pathsToExclude.test(path) && !session.urls.includes(path) ) {
     return NextResponse.redirect(new URL(`/access-denied`, req.url));
   }
-
   requestHeaders.set('x-pathname', req.nextUrl.pathname);
   return NextResponse.next({
     request: {
