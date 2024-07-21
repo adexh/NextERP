@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
+import AuthProvider from "@/components/auth-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -37,8 +38,10 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.variable}>
+      <AuthProvider session={session}>
         <Toaster />
             {children}
+      </AuthProvider>
       </body>
     </html>
   );
