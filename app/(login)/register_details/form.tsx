@@ -3,6 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { useRouter } from "next/navigation";
+
 
 import { cn } from "@/lib/utils"
 
@@ -40,15 +42,16 @@ const formSchema = z.object({
 
 
 export function ProfileForm() {
+  const router = useRouter();
 
-  const session = useSession();
+  const { data: session, update } = useSession();
   let namePresent = false;
 
   let defaultValues;
-  if(session.data?.user.f_name && session.data?.user.l_name) {
+  if(session?.user.f_name && session?.user.l_name) {
     defaultValues = {
-      f_name: session.data?.user?.f_name,
-      l_name: session.data?.user?.l_name
+      f_name: session?.user?.f_name,
+      l_name: session?.user?.l_name
     }
     namePresent = true;
   }
@@ -60,8 +63,8 @@ export function ProfileForm() {
   })
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const body = {...values, email: session.data?.user.email}
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const body = {...values, email: session?.user.email}
     const updateUser = async () => {
       const data = await fetch("/api/auth/register_details",
       {
@@ -69,9 +72,11 @@ export function ProfileForm() {
         body: JSON.stringify(body)
       })
     }
-    updateUser().then((data)=>{
-      console.log(data);
-    })
+    await updateUser();
+
+    await update({...session, profileComplete:true });
+
+    router.push('/');
   }
 
   return (

@@ -14,6 +14,8 @@ import prisma from "@/lib/prisma";
 import { headers } from 'next/headers'
 import Unauthorized from "@/components/unauthorized";
 import Loading from "../../components/loading";
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({
   variable: "--font-inter",
@@ -59,6 +61,8 @@ export default async function RootLayout({
                   <Sidebar />
                   <div className="bg-gray-100 flex-grow overflow-y-auto overscroll-contain h-[calc(100vh-70px)]">
                     {children}
+                    <SpeedInsights />
+                    <Analytics />
                   </div>
                 </Suspense>
               </div>

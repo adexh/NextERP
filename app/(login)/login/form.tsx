@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import LoadingDots from "@/components/loading-dots";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Github, Mail } from "lucide-react";
+import { Github, Mail, LogIn } from "lucide-react";
 
 export default function Form() {
   const [loading, setLoading] = useState(false);
@@ -48,7 +48,6 @@ export default function Form() {
           className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
         />
       </div>
-
       <button
         disabled={loading}
         className={`${loading
@@ -78,6 +77,33 @@ export default function Form() {
       }}
         className="border-black bg-black text-white hover:bg-white hover:text-black flex h-10 items-center justify-center rounded-md border text-sm transition-all focus:outline-none"
       > <span className="flex justify-center items-center"><Github className="mr-2" /> Github</span></button>
+      <div className="relative flex py-2 items-center">
+        <div className="flex-grow border-t border-gray-400"></div>
+        <span className="flex-shrink mx-4 text-gray-400">Or</span>
+        <div className="flex-grow border-t border-gray-400"></div>
+      </div>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          signIn("guest")
+            // @ts-ignore
+            .then(() => {
+                router.refresh();
+                router.push('/');
+            });
+        }}
+        disabled={loading}
+        className={`${loading
+          ? "cursor-not-allowed border-gray-200 bg-gray-100"
+          : "border-black bg-black text-white hover:bg-white hover:text-black"
+          } flex h-10 w-full items-center justify-center rounded-md border text-sm transition-all focus:outline-none`}
+      >
+        {loading ? (
+          <LoadingDots color="#808080" />
+        ) : (
+          <p><span className="flex justify-center items-center"><LogIn className="mr-2" />Guest Login</span></p>
+        )}
+      </button>
     </form>
   );
 }

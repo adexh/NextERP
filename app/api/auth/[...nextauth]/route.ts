@@ -6,7 +6,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
 import prisma from "@/lib/prisma";
 import toast from "react-hot-toast";
-import { AdapterUser } from "next-auth/adapters";
+import { Adapter, AdapterUser } from "next-auth/adapters";
 
 export interface GithubEmail extends Record<string, any> {
   email: string
@@ -15,7 +15,7 @@ export interface GithubEmail extends Record<string, any> {
   visibility: "public" | "private"
 }
 
-const getModuleUrls = async (user: AdapterUser|User) => {
+const getModuleUrls = async (user: AdapterUser | User) => {
   const data = await prisma.role_modules_map.findMany({
     select: {
       module: {
@@ -33,7 +33,7 @@ const getModuleUrls = async (user: AdapterUser|User) => {
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(new PrismaClient()),
+  adapter: PrismaAdapter(new PrismaClient()) as Adapter,
   providers: [
     EmailProvider({
       server: {
@@ -57,11 +57,28 @@ export const authOptions: NextAuthOptions = {
           l_name: profile.name.split(" ")[1] ?? profile.login.split(" ")[1]
         };
       }
+    }),
+    CredentialsProvider({
+      id: "guest",
+      async authorize(credentials, req) {
+        const user = { id: "-1", email: "guest@example.com", profileComplete: true, f_name: "Guest", l_name:"", role_id:1 }
+        return user;
+      }
     })
   ],
   session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      console.log("JWT Callback");
+      console.log(user);
+      
+    
+      if( trigger === 'update' && session?.profileComplete ) {
+        console.log("Update triggerd");
+        token.profileComplete = session.profileComplete
+        return token;
+      }
+
       if (user) {
         const urls = await getModuleUrls(user);
         return {
@@ -77,6 +94,12 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token, user }) {
+      console.log("Session callback");
+      // console.log(token);
+      
+      
+      
+
       session.user.id = token.id as number;
       session.user.f_name = token.f_name as string;
       session.user.l_name = token.l_name as string;
