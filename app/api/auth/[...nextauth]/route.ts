@@ -1,12 +1,11 @@
-import NextAuth, { User, type NextAuthOptions } from "next-auth";
+import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GitHubProvider from "next-auth/providers/github";
 import EmailProvider from "next-auth/providers/email";
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
-import prisma from "@/lib/prisma";
-import toast from "react-hot-toast";
-import { Adapter, AdapterUser } from "next-auth/adapters";
+import { DrizzleAdapter } from "@auth/drizzle-adapter"
+import { db } from "@/lib/db";
+import { Adapter } from "next-auth/adapters";
+import { userInHrm, AccountInHrm, SessionInHrm, VerificationTokenInHrm } from "../../../../drizzle/schema";
 
 export interface GithubEmail extends Record<string, any> {
   email: string
@@ -15,25 +14,11 @@ export interface GithubEmail extends Record<string, any> {
   visibility: "public" | "private"
 }
 
-const getModuleUrls = async (user: AdapterUser | User) => {
-  const data = await prisma.role_modules_map.findMany({
-    select: {
-      module: {
-        select: {
-          path: true
-        }
-      }
-    },
-    where: {
-      role_id: user.role,
-      active_status: true
-    }
-  })
-  return data.map(d => d.module.path)
-}
-
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(new PrismaClient()) as Adapter,
+  adapter: DrizzleAdapter(db,  {
+    //@ts-expect-error As our users table structure different
+    usersTable: userInHrm,accountsTable: AccountInHrm,sessionsTable: SessionInHrm, verificationTokensTable: VerificationTokenInHrm,
+  }) as Adapter,
   providers: [
     EmailProvider({
       server: {
@@ -54,7 +39,9 @@ export const authOptions: NextAuthOptions = {
           id: profile.id,
           email: profile.email,
           f_name: profile.name.split(" ")[0] ?? profile.login.split(" ")[0],
-          l_name: profile.name.split(" ")[1] ?? profile.login.split(" ")[1]
+          l_name: profile.name.split(" ")[1] ?? profile.login.split(" ")[1],
+          role: null,
+          profileComplete: false
         };
       }
     }),
@@ -80,15 +67,13 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (user) {
-        const urls = await getModuleUrls(user);
         return {
           ...token,
           id: user.id,
           f_name: user.f_name,
           l_name: user.l_name,
           role: user.role_id,
-          profileComplete: user.profileComplete,
-          urls: urls
+          profileComplete: user.profileComplete
         }
       }
       return token

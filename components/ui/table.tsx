@@ -3,7 +3,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 const paginate = (array: any[], page_size: number, page_number: number) => {
-  return array.slice((page_number - 1) * page_size, page_number * page_size);
+  return array?.slice((page_number - 1) * page_size, page_number * page_size);
 }
 
 const renderPageNumbers = (pages: number,setCurrentPage: any, currentPage: number) => {

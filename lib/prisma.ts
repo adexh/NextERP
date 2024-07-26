@@ -4,7 +4,7 @@ declare global {
   var prisma: PrismaClient | undefined;
 }
 
-const prisma = new PrismaClient().$extends({
+const prisma = new PrismaClient({ log: ['query', 'info', 'warn', 'error'] }).$extends({
   result: {
     clients: {
       fullName: {
@@ -23,4 +23,4 @@ const prisma = new PrismaClient().$extends({
 //@ts-expect-error
 if (process.env.NODE_ENV === "development") global.prisma = prisma;
 
-export default prisma;
+// Migrating to Drizzle export default prisma;
