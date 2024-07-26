@@ -57,9 +57,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       console.log("JWT Callback");
-      console.log(user);
-      
-    
+
       if( trigger === 'update' && session?.profileComplete ) {
         console.log("Update triggerd");
         token.profileComplete = session.profileComplete
@@ -73,6 +71,7 @@ export const authOptions: NextAuthOptions = {
           f_name: user.f_name,
           l_name: user.l_name,
           role: user.role_id,
+          tenant_id: user.tenant_id,
           profileComplete: user.profileComplete
         }
       }
@@ -80,17 +79,13 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token, user }) {
       console.log("Session callback");
-      // console.log(token);
-      
-      
-      
 
       session.user.id = token.id as number;
       session.user.f_name = token.f_name as string;
       session.user.l_name = token.l_name as string;
       session.user.role = token.role as number
       session.user.profileComplete = token.profileComplete as boolean
-      session.user.urls = token.urls as string[]
+      session.user.tenant_id = token.tenant_id as string
       return session
     }
   },

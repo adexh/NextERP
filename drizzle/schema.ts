@@ -1,4 +1,5 @@
-import { pgSchema, varchar, timestamp, text, integer, uniqueIndex, foreignKey, serial, boolean, index } from "drizzle-orm/pg-core"
+import { pgSchema, varchar, timestamp, text, integer, uniqueIndex, foreignKey, serial, boolean, index, uuid } from "drizzle-orm/pg-core"
+import { createId } from '@paralleldrive/cuid2';
 
 export const hrm = pgSchema("hrm");
 
@@ -28,11 +29,13 @@ export const userInHrm = hrm.table("user", {
 	emailVerified: timestamp("emailVerified", { precision: 3, mode: 'string' }),
 	profileComplete: boolean("profileComplete").default(false).notNull(),
 	as_client_id: integer("as_client_id"),
+	tenant_id: text('tenant_id').$defaultFn(() => createId())
 },
 (table) => {
 	return {
 		as_client_id_key: uniqueIndex("user_as_client_id_key").using("btree", table.as_client_id),
 		email_key: uniqueIndex("user_email_key").using("btree", table.email),
+		tenant_id_key: uniqueIndex("user_tenant_id_key").using("btree", table.tenant_id)
 	}
 });
 
@@ -62,7 +65,6 @@ export const modulesInHrm = hrm.table("modules", {
 	icon: text("icon"),
 	path: text("path"),
 	display_order: integer("display_order").default(0).notNull(),
-	group_id: integer("group_id").references(() => module_groupInHrm.id, { onDelete: "set null", onUpdate: "cascade" } ),
 },
 (table) => {
 	return {
@@ -149,19 +151,6 @@ export const employeesInHrm = hrm.table("employees", {
 	employer_id: integer("employer_id").references(() => userInHrm.id, { onDelete: "set null", onUpdate: "cascade" } ),
 });
 
-export const module_groupInHrm = hrm.table("module_group", {
-	id: serial("id").primaryKey().notNull(),
-	group_name: text("group_name").notNull(),
-	icon: text("icon").notNull(),
-	active_status: boolean("active_status").notNull(),
-	display_order: integer("display_order").default(0).notNull(),
-},
-(table) => {
-	return {
-		icon_key: uniqueIndex("module_group_icon_key").using("btree", table.icon),
-	}
-});
-
 export const VerificationTokenInHrm = hrm.table("VerificationToken", {
 	identifier: text("identifier").notNull(),
 	token: text("token").notNull(),
@@ -203,41 +192,6 @@ export const SessionInHrm = hrm.table("Session", {
 (table) => {
 	return {
 		sessionToken_key: uniqueIndex("Session_sessionToken_key").using("btree", table.sessionToken),
-	}
-});
-
-export const _UserClientsInHrm = hrm.table("_UserClients", {
-	A: integer("A").notNull().references(() => clientsInHrm.id, { onDelete: "cascade", onUpdate: "cascade" } ),
-	B: integer("B").notNull().references(() => userInHrm.id, { onDelete: "cascade", onUpdate: "cascade" } ),
-},
-(table) => {	
-	return {
-		AB_unique: uniqueIndex("_UserClients_AB_unique").using("btree", table.A, table.B),
-		B_idx: index().using("btree", table.B),
-	}
-});
-
-export const BackendPermissionInHrm = hrm.table("BackendPermission", {
-	id: serial("id").primaryKey().notNull(),
-	endpoint: text("endpoint").notNull(),
-	method: text("method").notNull(),
-	roleId: integer("roleId").notNull().references(() => rolesInHrm.id, { onDelete: "restrict", onUpdate: "cascade" } ),
-	active_status: boolean("active_status").default(true).notNull(),
-},
-(table) => {
-	return {
-		endpoint_key: uniqueIndex("BackendPermission_endpoint_key").using("btree", table.endpoint),
-	}
-});
-
-export const _ClientProjectsInHrm = hrm.table("_ClientProjects", {
-	A: integer("A").notNull().references(() => projectsInHrm.id, { onDelete: "cascade", onUpdate: "cascade" } ),
-	B: integer("B").notNull().references(() => userInHrm.id, { onDelete: "cascade", onUpdate: "cascade" } ),
-},
-(table) => {
-	return {
-		AB_unique: uniqueIndex("_ClientProjects_AB_unique").using("btree", table.A, table.B),
-		B_idx: index().using("btree", table.B),
 	}
 });
 

@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth/next";
-import prisma from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import { projectsInHrm } from "drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -8,16 +10,9 @@ export async function GET() {
   if(!session){
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
-  if(!session || session.user.role != "1"){
-    return Response.json({error: 'Unauthorized Access!'}, {status:401})
-  }
 
-  let data = await prisma.projects.findMany({
-    select: {
-      id:true,
-      name: true
-    }
-  });
-  
+  const data = await db.select().from(projectsInHrm)
+  .where(eq(projectsInHrm.user_id, session.user.id))
+
   return Response.json(data);
 }

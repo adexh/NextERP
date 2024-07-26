@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth/next";
 import { db } from "@/lib/db";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { rolesInHrm, userInHrm } from "drizzle/schema";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -21,8 +21,8 @@ export async function GET() {
     active_status: userInHrm.active_status,
     role: rolesInHrm.role_name
   }).from(userInHrm)
-  .where(eq(userInHrm.active_status,true))
   .fullJoin(rolesInHrm, eq(userInHrm.role_id, rolesInHrm.id))
+  .where(and(ne(userInHrm.id,session.user.id), eq(userInHrm.tenant_id, session.user.tenant_id)))
   
   return Response.json(data);
 }

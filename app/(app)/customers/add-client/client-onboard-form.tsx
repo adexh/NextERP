@@ -4,6 +4,7 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Button2 from "@/components/ui/button2";
 import "./client-onboard-form.css"
+import axios from "axios";
 
 // For Radio Group
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -45,23 +46,22 @@ const OnBoardForm = () => {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const createUser = async () => {
-      const data = await fetch("/api/clients/addClient",
-        {
-          method: "POST",
-          body: JSON.stringify(values)
-        })
-      if(data.status === 201){
-        toast.success("Client Added");
-      } else if(data.status === 409 ){
-        toast.error("Client Already Exists !");
-      } else {
-        console.log(await data.json());
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    axios("/api/clients/addClient",
+      {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        data: JSON.stringify(values)
+      }).then((resp) => {
+        if (resp.status === 201) {
+          toast.success("Client Added");
+        } else {
+          toast.error("Internal Error !");
+        }
+      }).catch((err) => {
+        console.log(err);
         toast.error("Internal Error !");
-      }
-    }
-    createUser();
+      })
   }
 
   return <>

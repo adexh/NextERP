@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import "./client-onboard-form.css"
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils"
+import axios from "axios";
 
 // For Radio Group
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -42,12 +43,12 @@ const formSchema = z.object({
   description: z.string(),
   expected_start_date: z.string(),
   expected_end_date: z.string(),
-  team_lead: z.number(),
+  team_lead: z.number().optional(),
   budget: z.string(),
   actual_cost: z.string(),
-  issues: z.string(),
+  issues: z.string().optional(),
   notes: z.string(),
-  client: z.number(),
+  client: z.number().optional(),
   // documents: z
   // .array(z.custom<FileList>())
   // .refine(
@@ -126,16 +127,27 @@ const OnBoardForm = () => {
     setFormData();
   },[])
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const createProject = async () => {
-      const data = await fetch("/api/projects/addProject",
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+      axios("/api/projects/addProject",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        data: JSON.stringify(values)
+      }).then((res)=>
         {
-          method: "POST",
-          body: JSON.stringify(values)
+          alert(res.data.message);
         })
-    }
-    createProject();
+      .catch((err)=>{
+        if (err.response) {
+          alert(err.response.data.message)
+        } else if (err.request) {
+          console.log(err.request);
+        } else {
+          console.log('Error', err.message);
+        }
+      })
   }
+
   return <>
     <Form {...form}>
       <form

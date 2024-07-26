@@ -3,9 +3,8 @@ import { db } from "@/lib/db";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import hasPermission from "@/lib/utils/api_role_auth";
 import { NextRequest } from "next/server";
-import { _ClientProjectsInHrm, clientsInHrm, modulesInHrm, projectsInHrm, role_modules_mapInHrm, rolesInHrm, userInHrm } from "drizzle/schema";
+import { modulesInHrm, projectsInHrm, role_modules_mapInHrm, rolesInHrm, userInHrm } from "drizzle/schema";
 import { and, eq, inArray, or } from "drizzle-orm";
-import { _ClientProjectsInHrmRelations } from "drizzle/relations";
 import { Description } from "@radix-ui/react-dialog";
 
 export async function GET(request: NextRequest) {
@@ -30,14 +29,12 @@ export async function GET(request: NextRequest) {
     completion_status: projectsInHrm.completion_status,
     status: projectsInHrm.status
   }).from(projectsInHrm)
-  .fullJoin(_ClientProjectsInHrm, eq(projectsInHrm.id, _ClientProjectsInHrm.A))
-  .fullJoin(userInHrm, eq(_ClientProjectsInHrm.B, userInHrm.id))
   .fullJoin(role_modules_mapInHrm, eq(role_modules_mapInHrm.role_id, session.user.role))
   .fullJoin(modulesInHrm, eq(modulesInHrm.id, role_modules_mapInHrm.module_id))
   .where(
     and(
-      eq(userInHrm.id, session.user.id),
-      eq(modulesInHrm.module_name, 'View Projects')
+      eq(projectsInHrm.user_id, session.user.id),
+      eq(modulesInHrm.module_name, 'Owned Projects')
     )
   )
   

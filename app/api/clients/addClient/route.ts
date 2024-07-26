@@ -13,9 +13,7 @@ export async function POST(request: NextRequest) {
   if(!session){
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
-
-  const auth = await hasPermission(session, request);
-  if( session.user.email == null || session.user.email ==undefined || auth ) {
+  if( session.user.email == null || session.user.email ==undefined ) {
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
   const user = await request.json();

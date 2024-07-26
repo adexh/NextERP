@@ -6,8 +6,9 @@ declare module "next-auth" {
     f_name: string,
     l_name: string,
     urls: string[],
-    role: number,
-    profileComplete: boolean
+    role_id: number,
+    profileComplete: boolean,
+    tenant_id: string
   }
   interface Session {
     user: User & DefaultSession["user"]

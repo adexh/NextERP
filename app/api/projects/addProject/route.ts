@@ -34,9 +34,13 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
+    //@ts-expect-error
+    if ( error?.message?.includes('duplicate') ) {
+      return new Response(JSON.stringify({message:"Project name already exists !"}), { status:400, headers: { 'Content-Type':'application/json' }},)
+    }
     console.error("Error in Add user API : ", error);
     return new Response(JSON.stringify({message:"Internal Error !"}),{ status:500 , headers: { 'Content-Type':'application/json' }}, )
   }
 
-  return new Response(JSON.stringify({message: "User Created !"}),{status: 201});
+  return new Response(JSON.stringify({message: "Project Created !"}),{status: 201});
 }

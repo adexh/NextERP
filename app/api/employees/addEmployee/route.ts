@@ -13,8 +13,7 @@ export async function POST(request: NextRequest) {
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
 
-  const auth = await hasPermission(session, request);
-  if( session.user.email == null || session.user.email ==undefined || auth ) {
+  if( session.user.email == null || session.user.email ==undefined ) {
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
 
@@ -38,6 +37,7 @@ export async function POST(request: NextRequest) {
       doj: employee.doj? new Date(employee.doj) : new Date(),
       designation: employee.designation,
       salary_id: 1,
+      employer_id: session.user.id
      })
   } catch (error) {
     if(error instanceof Prisma.PrismaClientKnownRequestError){
