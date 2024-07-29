@@ -1,11 +1,20 @@
 import { db } from "@/lib/db";
 import { eq, sql } from "drizzle-orm";
 import { rolesInHrm, userInHrm } from "drizzle/schema";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  const session = await getServerSession(authOptions);
+
+  if(!session){
+    return Response.json({error: 'Unauthorized Access!'}, {status:401})
+  }
+
   const { email, f_name, l_name, role }:{email:string, f_name:string, l_name:string, role:string} = await req.json();
+
 
   const exists = await db.select().from(userInHrm).where(eq( userInHrm.email, email ));
 
@@ -28,7 +37,7 @@ export async function POST(req: Request) {
         l_name : l_name,
         profileComplete: true,
         role_id : role_id
-      })
+      }).where(eq(userInHrm.id, session.user.id));
 
       return true;
     })
