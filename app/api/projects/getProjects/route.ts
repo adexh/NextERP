@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     completion_status: projectsInHrm.completion_status,
     status: projectsInHrm.status
   }).from(projectsInHrm)
-  .fullJoin(role_modules_mapInHrm, eq(role_modules_mapInHrm.role_id, session.user.role))
+  .fullJoin(role_modules_mapInHrm, eq(role_modules_mapInHrm.role_id, session.user.role_id))
   .fullJoin(modulesInHrm, eq(modulesInHrm.id, role_modules_mapInHrm.module_id))
   .where(
     and(

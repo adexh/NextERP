@@ -11,7 +11,7 @@ const checkPermission = async (session: Session, request: NextRequest) => {
         }
       },
     },
-    where: { id: session.user.role }
+    where: { id: session.user.role_id }
   });
 
   if(!role || !role.backendPermissions) {

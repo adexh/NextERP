@@ -1,4 +1,3 @@
-import { useSession } from "next-auth/react";
 import {ProfileForm} from "./form";
 
 export default function Login() {

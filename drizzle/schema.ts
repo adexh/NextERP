@@ -1,5 +1,12 @@
 import { pgSchema, varchar, timestamp, text, integer, uniqueIndex, foreignKey, serial, boolean, index, uuid } from "drizzle-orm/pg-core"
-import { createId } from '@paralleldrive/cuid2';
+import { init } from '@paralleldrive/cuid2';
+
+const createId = init({
+	length: 10,
+	// A custom fingerprint for the host environment. This is used to help
+	// prevent collisions when generating ids in a distributed system.
+	fingerprint: 'dqK1eR4uBeERmw==',
+  });
 
 export const hrm = pgSchema("hrm");
 
@@ -16,7 +23,7 @@ export const _prisma_migrationsInHrm = hrm.table("_prisma_migrations", {
 
 export const userInHrm = hrm.table("user", {
 	id: serial("id").primaryKey().notNull(),
-	f_name: varchar("f_name", { length: 200 }),
+	f_name: varchar("f_name", { length: 200 }).notNull(),
 	l_name: varchar("l_name", { length: 200 }),
 	username: varchar("username", { length: 200 }),
 	contact: varchar("contact", { length: 16 }),
@@ -29,7 +36,7 @@ export const userInHrm = hrm.table("user", {
 	emailVerified: timestamp("emailVerified", { precision: 3, mode: 'string' }),
 	profileComplete: boolean("profileComplete").default(false).notNull(),
 	as_client_id: integer("as_client_id"),
-	tenant_id: text('tenant_id').$defaultFn(() => createId())
+	tenant_id: text('tenant_id').$defaultFn(() => createId()).notNull()
 },
 (table) => {
 	return {
@@ -43,6 +50,7 @@ export const role_modules_mapInHrm = hrm.table("role_modules_map", {
 	id: serial("id").primaryKey().notNull(),
 	module_id: integer("module_id").notNull().references(() => modulesInHrm.id, { onDelete: "restrict", onUpdate: "cascade" } ),
 	role_id: integer("role_id").notNull().references(() => rolesInHrm.id, { onDelete: "restrict", onUpdate: "cascade" } ),
+	tenant_id: text("tenant_id").notNull().references(() => userInHrm.tenant_id, { onDelete: "set null", onUpdate: "restrict" } ),
 	active_status: boolean("active_status").default(true).notNull(),
 });
 

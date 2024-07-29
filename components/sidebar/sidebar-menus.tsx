@@ -19,7 +19,6 @@ const SidebarMenus = () => {
   useEffect(() => {
     const fetchData = async () => {
       let response = null;
-      // let data: Imenu[];
       try {
         response = await fetch("/api/modules/get-modules");
         console.log("Response from fetch : ", response);

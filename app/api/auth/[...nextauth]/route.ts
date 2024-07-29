@@ -1,4 +1,4 @@
-import NextAuth, { type NextAuthOptions } from "next-auth";
+import NextAuth, { User, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GitHubProvider from "next-auth/providers/github";
 import EmailProvider from "next-auth/providers/email";
@@ -6,6 +6,7 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import { db } from "@/lib/db";
 import { Adapter } from "next-auth/adapters";
 import { userInHrm, AccountInHrm, SessionInHrm, VerificationTokenInHrm } from "../../../../drizzle/schema";
+import { and, eq } from "drizzle-orm";
 
 export interface GithubEmail extends Record<string, any> {
   email: string
@@ -40,15 +41,27 @@ export const authOptions: NextAuthOptions = {
           email: profile.email,
           f_name: profile.name.split(" ")[0] ?? profile.login.split(" ")[0],
           l_name: profile.name.split(" ")[1] ?? profile.login.split(" ")[1],
-          role: null,
+          role_id: null,
           profileComplete: false
         };
       }
     }),
     CredentialsProvider({
       id: "guest",
+      credentials: {},
       async authorize(credentials, req) {
-        const user = { id: "-1", email: "guest@example.com", profileComplete: true, f_name: "Guest", l_name:"", role_id:1 }
+        const result = await db.select({
+          id: userInHrm.id,
+          email: userInHrm.email,
+          f_name: userInHrm.f_name,
+          l_name: userInHrm.l_name,
+          role_id: userInHrm.role_id,
+          profileComplete: userInHrm.profileComplete,
+          tenant_id: userInHrm.tenant_id
+        }).from(userInHrm).where(and(eq(userInHrm.id, -1), eq(userInHrm.f_name, 'Guest')));
+
+        const user : User = result[0];
+
         return user;
       }
     })
@@ -70,7 +83,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           f_name: user.f_name,
           l_name: user.l_name,
-          role: user.role_id,
+          role_id: user.role_id,
           tenant_id: user.tenant_id,
           profileComplete: user.profileComplete
         }
@@ -83,7 +96,7 @@ export const authOptions: NextAuthOptions = {
       session.user.id = token.id as number;
       session.user.f_name = token.f_name as string;
       session.user.l_name = token.l_name as string;
-      session.user.role = token.role as number
+      session.user.role_id = token.role_id as number
       session.user.profileComplete = token.profileComplete as boolean
       session.user.tenant_id = token.tenant_id as string
       return session

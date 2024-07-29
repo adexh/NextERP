@@ -74,7 +74,7 @@ export function ProfileForm() {
     }
     await updateUser();
 
-    await update({...session, profileComplete:true });
+    await update({...session, f_name:values.f_name, l_name:values.l_name, profileComplete:true });
 
     router.push('/');
   }
