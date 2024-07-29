@@ -1,22 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { rolesInHrm, userInHrm, modulesInHrm, role_modules_mapInHrm, projectsInHrm, clientsInHrm, employeesInHrm, AccountInHrm, SessionInHrm, _employeesToprojectsInHrm } from "./schema";
-
-export const userInHrmRelations = relations(userInHrm, ({one, many}) => ({
-	rolesInHrm: one(rolesInHrm, {
-		fields: [userInHrm.role_id],
-		references: [rolesInHrm.id]
-	}),
-	projectsInHrms: many(projectsInHrm),
-	clientsInHrms: many(clientsInHrm),
-	employeesInHrms: many(employeesInHrm),
-	AccountInHrms: many(AccountInHrm),
-	SessionInHrms: many(SessionInHrm)
-}));
-
-export const rolesInHrmRelations = relations(rolesInHrm, ({many}) => ({
-	userInHrms: many(userInHrm),
-	role_modules_mapInHrms: many(role_modules_mapInHrm)
-}));
+import { modulesInHrm, role_modules_mapInHrm, rolesInHrm, userInHrm, projectsInHrm, clientsInHrm, employeesInHrm, SessionInHrm, AccountInHrm, _employeesToprojectsInHrm } from "./schema";
 
 export const role_modules_mapInHrmRelations = relations(role_modules_mapInHrm, ({one}) => ({
 	modulesInHrm: one(modulesInHrm, {
@@ -26,6 +9,10 @@ export const role_modules_mapInHrmRelations = relations(role_modules_mapInHrm, (
 	rolesInHrm: one(rolesInHrm, {
 		fields: [role_modules_mapInHrm.role_id],
 		references: [rolesInHrm.id]
+	}),
+	userInHrm: one(userInHrm, {
+		fields: [role_modules_mapInHrm.tenant_id],
+		references: [userInHrm.tenant_id]
 	}),
 }));
 
@@ -41,6 +28,24 @@ export const modulesInHrmRelations = relations(modulesInHrm, ({one, many}) => ({
 	}),
 }));
 
+export const rolesInHrmRelations = relations(rolesInHrm, ({many}) => ({
+	role_modules_mapInHrms: many(role_modules_mapInHrm),
+	userInHrms: many(userInHrm),
+}));
+
+export const userInHrmRelations = relations(userInHrm, ({one, many}) => ({
+	role_modules_mapInHrms: many(role_modules_mapInHrm),
+	rolesInHrm: one(rolesInHrm, {
+		fields: [userInHrm.role_id],
+		references: [rolesInHrm.id]
+	}),
+	projectsInHrms: many(projectsInHrm),
+	clientsInHrms: many(clientsInHrm),
+	employeesInHrms: many(employeesInHrm),
+	SessionInHrms: many(SessionInHrm),
+	AccountInHrms: many(AccountInHrm),
+}));
+
 export const projectsInHrmRelations = relations(projectsInHrm, ({one, many}) => ({
 	userInHrm: one(userInHrm, {
 		fields: [projectsInHrm.user_id],
@@ -49,11 +54,11 @@ export const projectsInHrmRelations = relations(projectsInHrm, ({one, many}) => 
 	_employeesToprojectsInHrms: many(_employeesToprojectsInHrm),
 }));
 
-export const clientsInHrmRelations = relations(clientsInHrm, ({one, many}) => ({
+export const clientsInHrmRelations = relations(clientsInHrm, ({one}) => ({
 	userInHrm: one(userInHrm, {
 		fields: [clientsInHrm.user_id],
 		references: [userInHrm.id]
-	})
+	}),
 }));
 
 export const employeesInHrmRelations = relations(employeesInHrm, ({one, many}) => ({
@@ -64,16 +69,16 @@ export const employeesInHrmRelations = relations(employeesInHrm, ({one, many}) =
 	_employeesToprojectsInHrms: many(_employeesToprojectsInHrm),
 }));
 
-export const AccountInHrmRelations = relations(AccountInHrm, ({one}) => ({
+export const SessionInHrmRelations = relations(SessionInHrm, ({one}) => ({
 	userInHrm: one(userInHrm, {
-		fields: [AccountInHrm.userId],
+		fields: [SessionInHrm.userId],
 		references: [userInHrm.id]
 	}),
 }));
 
-export const SessionInHrmRelations = relations(SessionInHrm, ({one}) => ({
+export const AccountInHrmRelations = relations(AccountInHrm, ({one}) => ({
 	userInHrm: one(userInHrm, {
-		fields: [SessionInHrm.userId],
+		fields: [AccountInHrm.userId],
 		references: [userInHrm.id]
 	}),
 }));

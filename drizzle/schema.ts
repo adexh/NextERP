@@ -159,6 +159,19 @@ export const employeesInHrm = hrm.table("employees", {
 	employer_id: integer("employer_id").references(() => userInHrm.id, { onDelete: "set null", onUpdate: "cascade" } ),
 });
 
+export const module_groupInHrm = hrm.table("module_group", {
+	id: serial("id").primaryKey().notNull(),
+	group_name: text("group_name").notNull(),
+	icon: text("icon").notNull(),
+	active_status: boolean("active_status").notNull(),
+	display_order: integer("display_order").default(0).notNull(),
+},
+(table) => {
+	return {
+		icon_key: uniqueIndex("module_group_icon_key").using("btree", table.icon),
+	}
+});
+
 export const VerificationTokenInHrm = hrm.table("VerificationToken", {
 	identifier: text("identifier").notNull(),
 	token: text("token").notNull(),
@@ -172,7 +185,7 @@ export const VerificationTokenInHrm = hrm.table("VerificationToken", {
 });
 
 export const AccountInHrm = hrm.table("Account", {
-	id: text("id").primaryKey().notNull(),
+	id: integer("id").primaryKey().notNull(),
 	userId: integer("userId").notNull().references(() => userInHrm.id, { onDelete: "cascade", onUpdate: "cascade" } ),
 	type: text("type").notNull(),
 	provider: text("provider").notNull(),
