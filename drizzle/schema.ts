@@ -105,6 +105,7 @@ export const projectsInHrm = hrm.table("projects", {
 	created_date: timestamp("created_date", { precision: 3, mode: 'date' }).notNull(),
 	last_updated_date: timestamp("last_updated_date", { precision: 3, mode: 'date' }).notNull(),
 	user_id: integer("user_id").references(() => userInHrm.id, { onDelete: "set null", onUpdate: "cascade" } ),
+	tenant_id: text("tenant_id").notNull().references(() => userInHrm.tenant_id, { onDelete: "set null", onUpdate: "restrict" } )
 },
 (table) => {
 	return {
@@ -157,19 +158,7 @@ export const employeesInHrm = hrm.table("employees", {
 	designation: text("designation").notNull(),
 	salary_id: integer("salary_id").notNull(),
 	employer_id: integer("employer_id").references(() => userInHrm.id, { onDelete: "set null", onUpdate: "cascade" } ),
-});
-
-export const module_groupInHrm = hrm.table("module_group", {
-	id: serial("id").primaryKey().notNull(),
-	group_name: text("group_name").notNull(),
-	icon: text("icon").notNull(),
-	active_status: boolean("active_status").notNull(),
-	display_order: integer("display_order").default(0).notNull(),
-},
-(table) => {
-	return {
-		icon_key: uniqueIndex("module_group_icon_key").using("btree", table.icon),
-	}
+	tenant_id: text("tenant_id").notNull().references(() => userInHrm.tenant_id, { onDelete: "set null", onUpdate: "restrict" } )
 });
 
 export const VerificationTokenInHrm = hrm.table("VerificationToken", {
@@ -185,7 +174,7 @@ export const VerificationTokenInHrm = hrm.table("VerificationToken", {
 });
 
 export const AccountInHrm = hrm.table("Account", {
-	id: integer("id").primaryKey().notNull(),
+	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 	userId: integer("userId").notNull().references(() => userInHrm.id, { onDelete: "cascade", onUpdate: "cascade" } ),
 	type: text("type").notNull(),
 	provider: text("provider").notNull(),
@@ -205,7 +194,7 @@ export const AccountInHrm = hrm.table("Account", {
 });
 
 export const SessionInHrm = hrm.table("Session", {
-	id: text("id").primaryKey().notNull(),
+	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 	sessionToken: text("sessionToken").notNull(),
 	userId: integer("userId").notNull().references(() => userInHrm.id, { onDelete: "cascade", onUpdate: "cascade" } ),
 	expires: timestamp("expires", { precision: 3, mode: 'string' }).notNull(),
