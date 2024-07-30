@@ -30,7 +30,8 @@ export async function POST(request: NextRequest) {
       notes: project.notes,
       created_date: new Date(),
       last_updated_date: new Date(),
-      user_id: session.user.id
+      user_id: session.user.id,
+      tenant_id: session.user.tenant_id
     })
 
   } catch (error) {
