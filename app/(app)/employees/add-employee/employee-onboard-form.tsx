@@ -39,21 +39,21 @@ const formSchema = z.object({
   lname: z.string(),
   contact: z.string(),
   email: z.string().email(),
-  org_email: z.string().email(),
+  org_email: z.string().email().optional(),
   gender: z.string(),
   projects: z.object({ name: z.string(), id: z.number() }).array().optional(),
   address: z.string(),
-  city: z.string(),
+  city: z.string().optional(),
   state: z.string(),
   country: z.string(),
-  pincode: z.string(),
+  pincode: z.string().optional(),
   dob: z.string({
     required_error: "A date of birth is required.",
-  }),
+  }).optional(),
   doj: z.string({
     required_error: "Date of Joining is required."
   }),
-  dor: z.string(),
+  dor: z.string().optional(),
   designation: z.string()
 })
 
@@ -316,7 +316,7 @@ const OnBoardForm = () => {
                   <FormItem>
                     <FormLabel>Designation</FormLabel>
                     <FormControl>
-                      <Input placeholder="Pratiksha, 10th Road, Juhu Scheme" {...field} />
+                      <Input placeholder="" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

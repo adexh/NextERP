@@ -75,7 +75,7 @@ const ClientTable = () => {
     }
   };
 
-  return <>
+  return (
     <div className="p-6">
       <Table>
         <TableHeader>
@@ -96,13 +96,9 @@ const ClientTable = () => {
               {columns.map(col => {
                 const value = row[col.key];
                 if (value === null) {
-                  return <>
-                    <TableCell key={value}>-</TableCell>
-                  </>
+                  return <TableCell key={value}>-</TableCell>
                 }
-                return <>
-                  <TableCell key={value}>{value?.toString()}</TableCell>
-                </>
+                return <TableCell key={value}>{value?.toString()}</TableCell>
               })}
             </TableRow>
           ))}
@@ -118,7 +114,7 @@ const ClientTable = () => {
         </button>
       </div>
     </div>
-  </>
+  )
 }
 
 export default ClientTable;

@@ -1,8 +1,10 @@
 import { getServerSession } from "next-auth/next";
-import prisma from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import hasPermission from "@/lib/utils/api_role_auth";
 import { NextRequest } from "next/server";
+import { clientsInHrm } from "drizzle/schema";
+import { arrayOverlaps, eq, inArray } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
   
@@ -11,28 +13,12 @@ export async function GET(request: NextRequest) {
   if(!session){
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
-  const auth = await hasPermission(session, request);
-  if( session.user.email == null || session.user.email ==undefined || auth ) {
+
+  if( session.user.email == null || session.user.email ==undefined ) {
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
 
-  let data = await prisma.clients.findMany({
-    select: {
-      id:true,
-      first_name:true,
-      last_name:true,
-      contact:true,
-      email:true,
-      org_name: true,
-    },
-    where: {
-      service_providers: {
-        some: {
-          id: session.user.id,
-        }
-      }
-    }
-  });
+  let data = await db.select().from(clientsInHrm).where(arrayOverlaps(clientsInHrm.service_provider_ids, [session.user.id]));
   
   return Response.json(data);
 }

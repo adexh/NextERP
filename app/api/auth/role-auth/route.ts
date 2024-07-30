@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
   
-  const role_id = session?.user.role;
+  const role_id = session?.user.role_id;
   const body = await request.json();
 
   const data = await prisma.role_modules_map.findFirst({

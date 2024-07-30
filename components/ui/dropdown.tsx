@@ -41,7 +41,7 @@ const Dropdown: React.FC<DropdownProps> = ({ children, options }) => {
                 return <div key={element.label}>
                   <Menu.Item >
                     <button
-                      className={'hover:bg-primary-200  text-gray-900 flex w-full items-center rounded-md px-2 py-2 text-sm'}
+                      className={'hover:bg-primary-800  text-gray-900 hover:text-white hover:bttn- flex w-full items-center rounded-2xl px-2 py-2 text-sm'}
                       onClick={element.onClickHandle}
                     >
                       <Image alt="icon" src={element.iconPath} width={20} height={20} priority className="mr-4"/>

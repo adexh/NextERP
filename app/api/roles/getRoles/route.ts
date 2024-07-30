@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth/next";
-import prisma from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import { rolesInHrm } from "drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -8,21 +10,15 @@ export async function GET() {
   if(!session){
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
-  if(!session || session.user.role != "1"){
-    return Response.json({error: 'Unauthorized Access!'}, {status:401})
-  }
-  const role_id = session?.user.role;
 
-  const data = await prisma.roles.findMany({
-    select: {
-      id:true,
-      role_name:true,
-      active_status:true
-    },
-    where:{
-      active_status:true
+  const data = await db.select(
+    {
+      id: rolesInHrm.id,
+      role_name: rolesInHrm.role_name,
+      active_status: rolesInHrm.active_status
     }
-  });
+  ).from(rolesInHrm)
+  .where(eq(rolesInHrm.active_status, true));
   
   return Response.json(data);
 }

@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth/next";
-import prisma from "@/lib/prisma";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import { db } from "@/lib/db";
+import { clientsInHrm } from "drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -9,14 +11,15 @@ export async function GET() {
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
 
-  let data = await prisma.clients.findMany({
-    select: {
-      id:true,
-      
-      first_name:true,
-      last_name:true,
+  const data = await db.select(
+    {
+      id: clientsInHrm.id,
+      first_name: clientsInHrm.first_name,
+      last_name: clientsInHrm.last_name,
     }
-  });
+  ).from(clientsInHrm)
+  .where(eq(clientsInHrm.user_id, session.user.id));
+
   data.forEach(el=>{
     //Manipulation for Frontend
     //@ts-expect-error

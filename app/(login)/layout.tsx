@@ -3,9 +3,11 @@ import "@/styles/globals.css";
 import { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
-import AuthProvider from "@/components/auth-provider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
+import AuthProvider from "@/components/auth-provider";
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({
   variable: "--font-inter",
@@ -38,10 +40,12 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.variable}>
+      <AuthProvider session={session}>
         <Toaster />
-        <AuthProvider session={session}>
-          {children}
-        </AuthProvider>
+            {children}
+            <SpeedInsights />
+            <Analytics />
+      </AuthProvider>
       </body>
     </html>
   );

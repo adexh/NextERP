@@ -42,7 +42,7 @@ export default function Settings() {
                 {card.child_modules?.map(el => {
                   return <Link key={el.module_name} href={el.path} className=" hover:text-primary-800">
                     <div className="my-2 bg-gray-100 rounded-[10px] px-2 py-2 flex items-center">
-                      <div className="bg-cyan-500 h-2 w-2 rounded-[20px] mr-2 border-2 border-cyan-800 box-content "></div>
+                      <div className="bg-gray-500 h-2 w-2 rounded-[20px] mr-2 border-2 border-gray-800 box-content "></div>
                       {el.module_name}
                     </div>
                   </Link>
