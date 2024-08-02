@@ -29,11 +29,11 @@ const UserSection = () => {
     }
   ]
 
-  return <div className="flex items-center ml-10 mb-3">
+  return <div className="flex items-center ml-10 mb-3 min-w-48">
     <Image src="/profile.svg" alt="profileIcon" width={54} height={54} className="text-slate-900 grayscale hover:grayscale-0" />
     <div>
       <h3 className="font-bold ml-2">{session.data?.user.f_name}</h3>
-      <div className="text-xs text-gray-500 ml-2 mt-0">Full Stack Developer</div>
+      {/* <div className="text-xs text-gray-500 ml-2 mt-0">Full Stack Developer</div> */}
     </div>
     <Dropdown options={options}>
       <HiOutlineChevronDown key={1} className="self-start text-gray-700" />
