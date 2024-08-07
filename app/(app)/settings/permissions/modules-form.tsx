@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 
-import Loading from "@/components/loading"
+import { Skeleton } from "@/components/ui/skeleton"
 
 import toast from "react-hot-toast"
 
@@ -116,7 +116,15 @@ export function ModulesCheckboxForm({ role }: PropTypes) {
   }
 
   if( loading ) {
-    return <Loading />
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-24 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    )
   }
 
   return (

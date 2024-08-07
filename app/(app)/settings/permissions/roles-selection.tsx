@@ -65,11 +65,15 @@ export function RolesDropdown() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      { role && <div className="flex justify-between">
+      {role && <div className="flex justify-between">
+        <div className="min-w-[40%]">
           <ModulesCheckboxForm role={role} />
+        </div>
+        <div className="min-w-[40%]">
           <ActionsCheckboxForm role={role} />
-          <div/>
-        </div>}
+        </div>
+        <div />
+      </div>}
     </div>
   )
 }
