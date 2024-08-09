@@ -16,7 +16,6 @@ import toast from "react-hot-toast"
 import { useEffect, useState } from "react"
 
 import axios from "axios"
-import { ActionsCheckboxForm } from "./actions-form"
 
 type roleType = {
   id: string,
@@ -66,13 +65,10 @@ export function RolesDropdown() {
         </DropdownMenu>
       </div>
       {role && <div className="flex justify-between">
-        <div className="min-w-[40%]">
+        <div className="w-full">
           <ModulesCheckboxForm role={role} />
         </div>
-        <div className="min-w-[40%]">
-          <ActionsCheckboxForm role={role} />
-        </div>
-        <div />
+        <div/>
       </div>}
     </div>
   )
