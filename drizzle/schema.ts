@@ -1,4 +1,4 @@
-import { pgSchema, varchar, timestamp, text, integer, uniqueIndex, foreignKey, serial, boolean, index, uuid } from "drizzle-orm/pg-core"
+import { pgSchema, varchar, timestamp, text, integer, uniqueIndex, foreignKey, serial, boolean, index, uuid, unique } from "drizzle-orm/pg-core"
 import { init } from '@paralleldrive/cuid2';
 
 const createId = init({
@@ -52,6 +52,11 @@ export const role_modules_mapInHrm = hrm.table("role_modules_map", {
 	role_id: integer("role_id").notNull().references(() => rolesInHrm.id, { onDelete: "restrict", onUpdate: "cascade" } ),
 	tenant_id: text("tenant_id").notNull().references(() => userInHrm.tenant_id, { onDelete: "set null", onUpdate: "restrict" } ),
 	active_status: boolean("active_status").default(true).notNull(),
+},
+(table) => {
+	return {
+		role_modules_unique_index: uniqueIndex("role_modules_unique_key").on(table.module_id, table.role_id, table.tenant_id)
+	}
 });
 
 export const rolesInHrm = hrm.table("roles", {
@@ -83,6 +88,36 @@ export const modulesInHrm = hrm.table("modules", {
 			foreignColumns: [table.id],
 			name: "modules_parent_id_fkey"
 		}).onUpdate("cascade").onDelete("set null"),
+	}
+});
+
+export const actionsGroupInHrm = hrm.table("actions_group", {
+	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+	group_name: varchar("group_name", { length: 300 }).notNull().unique()
+});
+
+export const actionsInHrm = hrm.table("actions", {
+	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+	action_name: varchar("action_name", { length: 200 }).notNull(),
+	group_id: integer("group_id").references(()=> actionsGroupInHrm.id, { onDelete: "set null", onUpdate: "restrict" }),
+	active_status: boolean("active_status").default(true).notNull()
+},
+(table) => {
+	return {
+		action_name_key: uniqueIndex("action_name_key").using("btree", table.action_name)
+	}
+});
+
+export const actionsRolesInHrm = hrm.table("actions_roles_map", {
+	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+	action_id: integer("action_id").notNull().references(() => actionsInHrm.id, { onDelete: "restrict", onUpdate: "cascade" } ),
+	role_id: integer("role_id").notNull().references(() => rolesInHrm.id, { onDelete: "restrict", onUpdate: "cascade" } ),
+	tenant_id: text("tenant_id").notNull().references(() => userInHrm.tenant_id, { onDelete: "set null", onUpdate: "restrict" } ),
+	active_status: boolean("active_status").default(true).notNull(),
+},
+(table) => {
+	return {
+		actions_roles_unique_index: uniqueIndex("actions_roles_unique_key").on(table.action_id, table.role_id, table.tenant_id)
 	}
 });
 

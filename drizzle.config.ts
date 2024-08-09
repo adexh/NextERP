@@ -3,7 +3,7 @@ import { defineConfig } from 'drizzle-kit'
 
 export default defineConfig({
   schema: "./drizzle/schema.ts",
-  out: './drizzle',
+  out: './drizzle/out',
   schemaFilter: ['hrm'],
   dialect: 'postgresql',
   verbose: true,
