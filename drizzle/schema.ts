@@ -91,36 +91,6 @@ export const modulesInHrm = hrm.table("modules", {
 	}
 });
 
-export const actionsGroupInHrm = hrm.table("actions_group", {
-	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-	group_name: varchar("group_name", { length: 300 }).notNull().unique()
-});
-
-export const actionsInHrm = hrm.table("actions", {
-	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-	action_name: varchar("action_name", { length: 200 }).notNull(),
-	group_id: integer("group_id").references(()=> actionsGroupInHrm.id, { onDelete: "set null", onUpdate: "restrict" }),
-	active_status: boolean("active_status").default(true).notNull()
-},
-(table) => {
-	return {
-		action_name_key: uniqueIndex("action_name_key").using("btree", table.action_name)
-	}
-});
-
-export const actionsRolesInHrm = hrm.table("actions_roles_map", {
-	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-	action_id: integer("action_id").notNull().references(() => actionsInHrm.id, { onDelete: "restrict", onUpdate: "cascade" } ),
-	role_id: integer("role_id").notNull().references(() => rolesInHrm.id, { onDelete: "restrict", onUpdate: "cascade" } ),
-	tenant_id: text("tenant_id").notNull().references(() => userInHrm.tenant_id, { onDelete: "set null", onUpdate: "restrict" } ),
-	active_status: boolean("active_status").default(true).notNull(),
-},
-(table) => {
-	return {
-		actions_roles_unique_index: uniqueIndex("actions_roles_unique_key").on(table.action_id, table.role_id, table.tenant_id)
-	}
-});
-
 export const projectsInHrm = hrm.table("projects", {
 	id: serial("id").primaryKey().notNull(),
 	name: text("name").notNull(),
@@ -144,7 +114,7 @@ export const projectsInHrm = hrm.table("projects", {
 },
 (table) => {
 	return {
-		name_key: uniqueIndex("projects_name_key").using("btree", table.name),
+		name_key: uniqueIndex("projects_name_key").using("btree", table.name, table.tenant_id),
 	}
 });
 
