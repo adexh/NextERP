@@ -47,7 +47,7 @@ export function RolesDropdown() {
   }
 
   return (
-    <div className="ml-10
+    <div className="ml-10">
       <div className="my-10 flex items-center">
         <DropdownMenu>
           <label htmlFor="role-btn" className="mr-4 text-lg" >Select Role:</label>
