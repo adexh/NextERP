@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX IF NOT EXISTS "auth_code_userId_key" ON "hrm"."auth_code" USING btree ("userId");--> statement-breakpoint
+ALTER TABLE "hrm"."auth_code" ADD CONSTRAINT "auth_code_userId_unique" UNIQUE("userId");

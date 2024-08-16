@@ -5,9 +5,6 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useRouter } from "next/navigation";
 
-
-import { cn } from "@/lib/utils"
-
 import {
   Select,
   SelectContent,
@@ -28,7 +25,10 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { signIn, signOut, useSession } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
+import { useEffect, useState } from "react";
+
+import axios from "axios";
 
 const formSchema = z.object({
   f_name: z.string().min(2, {
@@ -40,9 +40,24 @@ const formSchema = z.object({
   role: z.string()
 })
 
+type role = {
+  id: number,
+  role_name: string,
+  active_status:boolean
+}
+
 
 export function ProfileForm() {
   const router = useRouter();
+  const [ roles, setRoles ] = useState<role[]>();
+
+  useEffect(()=>{
+    axios.get("/api/roles/getRoles").then((resp)=>{
+      if( resp.data ){
+        setRoles(resp.data.filter((el:role) => el.active_status))
+      }
+    })
+  },[])
 
   const { data: session, update } = useSession();
   let namePresent = false;
@@ -131,9 +146,9 @@ export function ProfileForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Admin">Admin</SelectItem>
-                    <SelectItem value="client">Client</SelectItem>
-                    <SelectItem value="employee">Employee</SelectItem>
+                    {roles?.map((role)=>{
+                      return <SelectItem key={role.id} value={role.role_name}>{role.role_name}</SelectItem>
+                    })}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -143,6 +158,21 @@ export function ProfileForm() {
               </FormItem>
             )}
           />
+          { (form.getFieldState("role").isDirty && form.watch("role") != "Admin" ) && <FormField
+            control={form.control}
+            name="l_name"
+            render={({ field }) => (
+              <>
+                <FormItem className="flex items-center">
+                  <FormLabel className="mr-2">AuthCode</FormLabel>
+                  <FormControl>
+                    <Input className="w-20" type="number" placeholder="1234" {...field} disabled={namePresent}/>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </>
+            )}
+          />}
           <div className="flex justify-between">
             <Button type="button" variant={'outline'} onClick={() => signOut()}>Logout</Button>
             <Button type="submit">Submit</Button>

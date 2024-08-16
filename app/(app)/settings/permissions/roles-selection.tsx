@@ -14,6 +14,7 @@ import { ModulesCheckboxForm } from "./modules-form"
 
 import toast from "react-hot-toast"
 import { useEffect, useState } from "react"
+import { InfoDialog } from "./info"
 
 import axios from "axios"
 
@@ -47,7 +48,7 @@ export function RolesDropdown() {
 
   return (
     <div className="ml-10">
-      <div className="my-10">
+      <div className="my-10 flex items-center">
         <DropdownMenu>
           <label htmlFor="role-btn" className="mr-4 text-lg" >Select Role:</label>
           <DropdownMenuTrigger asChild>
@@ -63,12 +64,13 @@ export function RolesDropdown() {
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
+        <div className="ml-5"><InfoDialog /></div>
       </div>
       {role && <div className="flex justify-between">
         <div className="w-full">
           <ModulesCheckboxForm role={role} />
         </div>
-        <div/>
+        <div />
       </div>}
     </div>
   )
