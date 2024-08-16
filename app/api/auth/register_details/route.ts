@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { eq, sql } from "drizzle-orm";
+import { eq, and, gt } from "drizzle-orm";
 import { authcodesInHrm, rolesInHrm, userInHrm } from "drizzle/schema";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]/route";
@@ -38,7 +38,13 @@ export async function POST(req: Request) {
           respMgs.message = "auth code required";
           return false;
         }
-        const [amdinTenantId] = await db.select({tenantId: userInHrm.tenant_id}).from(authcodesInHrm).innerJoin(userInHrm, eq(authcodesInHrm.userId, userInHrm.id)).where(eq(authcodesInHrm.code, authCode)).limit(1);
+        const [amdinTenantId] = await db.select({tenantId: userInHrm.tenant_id}).from(authcodesInHrm).innerJoin(userInHrm, eq(authcodesInHrm.userId, userInHrm.id)).where(and(eq(authcodesInHrm.code, authCode), gt(authcodesInHrm.expiresAt, Math.floor(Date.now()/1000)))).limit(1);
+
+        if( !amdinTenantId ) {
+          tx.rollback();
+          respMgs.message = "auth code expired";
+          return false;
+        }
 
         await tx.update(userInHrm).set({
           f_name : f_name,

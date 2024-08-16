@@ -9,7 +9,7 @@ function generateAuthCode(): number {
 }
 
 async function insertUniqueAuthCode(adminId: number, maxRetries: number = 2): Promise<{ authCode: number; expiresAt: number }> {
-  const expiresAt = Math.floor((Date.now())/1000) + 10;
+  const expiresAt = Math.floor((Date.now())/1000) + 30;
   let retries = 0;
   let authCode: number;
 
@@ -53,18 +53,8 @@ export async function GET() {
   }
   try {
     const { authCode, expiresAt } = await insertUniqueAuthCode(adminId);
-    await wait();
     return Response.json({ authCode, expiresAt }, {status: 200});
   } catch (error) {
     return Response.json({ error: 'Failed to generate auth code' }, { status: 500 });
   }
-}
-
-
-const wait = async()=>{
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(true);
-    }, 1000);
-  })
 }
