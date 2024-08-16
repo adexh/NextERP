@@ -50,7 +50,7 @@ const UserSection = () => {
         if( roleName ) setRoleName(roleName.role_name);
       }
     } else {
-      axios.get("/api/roles/getRoleName").then(resp=>{
+      axios.get("/api/roles/getRoles").then(resp=>{
         const data:roleName[] = resp.data;
         localStorage.setItem("roleNames",JSON.stringify(data));
         const roleName = data.find(el => el.id == id);
