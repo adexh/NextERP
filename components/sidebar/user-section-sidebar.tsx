@@ -58,7 +58,7 @@ const UserSection = () => {
       })
     }
   },[roleName])
-
+	
   return <div className="flex items-center ml-10 mb-3 min-w-48">
     <Image src="/profile.svg" alt="profileIcon" width={54} height={54} className="text-slate-900 grayscale hover:grayscale-0" />
     <div>
