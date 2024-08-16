@@ -14,6 +14,8 @@ import {
 import { RefreshCw } from 'lucide-react';
 import axios from "axios";
 
+let interval:NodeJS.Timeout;
+
 export default function Settings() {
 
   const [cards, setCards] = useState<ISubMenu[]>();
@@ -72,12 +74,10 @@ const AuthCode = () => {
   const [ expired, setExpired ] = useState<boolean>(false);
   const [ time, setTime ] = useState<number>(0);
 
-  useEffect(() => {
-    getAuthCode();
-  },[])
-
   const getAuthCode = () => {
     setLoading(true);
+    if( interval ) clearInterval(interval);
+
     axios.get("/api/auth/authCode").then(res => {
       const { authCode, expiresAt } = res.data;
       const secs = expiresAt - Number(Math.floor(Date.now()/1000))
@@ -86,7 +86,7 @@ const AuthCode = () => {
       setLoading(false);
       setExpired(false);
 
-      const interval = setInterval(()=>{
+      interval = setInterval(()=>{
         setTime((prevTime) => {
           if (prevTime <= 1) {
             clearInterval(interval);
