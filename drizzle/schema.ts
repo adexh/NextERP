@@ -1,4 +1,4 @@
-import { pgSchema, varchar, timestamp, text, integer, uniqueIndex, foreignKey, serial, boolean, index, uuid, unique } from "drizzle-orm/pg-core"
+import { pgSchema, varchar, timestamp, text, integer, uniqueIndex, foreignKey, serial, boolean, index, uuid, unique, bigint } from "drizzle-orm/pg-core"
 import { init } from '@paralleldrive/cuid2';
 
 const createId = init({
@@ -45,6 +45,19 @@ export const userInHrm = hrm.table("user", {
 		tenant_id_key: uniqueIndex("user_tenant_id_key").using("btree", table.tenant_id)
 	}
 });
+
+export const authcodesInHrm = hrm.table("auth_code", {
+	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+	code: bigint("code",{ mode: 'number' }).notNull().unique(),
+	expiresAt: integer("expiresAt").notNull(),
+	userId: integer("userId").notNull().references(() => userInHrm.id, { onDelete: "cascade", onUpdate: "cascade" }).unique()
+},
+(table) => {
+	return {
+		code_key: uniqueIndex("auth_code_code_key").using("btree", table.code),
+		userId_key: uniqueIndex("auth_code_userId_key").using("btree", table.userId)
+	}
+})
 
 export const role_modules_mapInHrm = hrm.table("role_modules_map", {
 	id: serial("id").primaryKey().notNull(),

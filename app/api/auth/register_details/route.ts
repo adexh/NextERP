@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { eq, sql } from "drizzle-orm";
-import { rolesInHrm, userInHrm } from "drizzle/schema";
+import { authcodesInHrm, rolesInHrm, userInHrm } from "drizzle/schema";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
 
-  const { email, f_name, l_name, role }:{email:string, f_name:string, l_name:string, role:string} = await req.json();
+  const { email, f_name, l_name, role, authCode }:{email:string, f_name:string, l_name:string, role:string, authCode?:number} = await req.json();
 
 
   const exists = await db.select().from(userInHrm).where(eq( userInHrm.email, email ));
@@ -32,12 +32,30 @@ export async function POST(req: Request) {
         return false;
       }
 
-      await tx.update(userInHrm).set({
-        f_name : f_name,
-        l_name : l_name,
-        profileComplete: true,
-        role_id : role_id
-      }).where(eq(userInHrm.id, session.user.id));
+      if( role != 'Admin' ) {
+        if( !authCode ) {
+          tx.rollback();
+          respMgs.message = "auth code required";
+          return false;
+        }
+        const [amdinTenantId] = await db.select({tenantId: userInHrm.tenant_id}).from(authcodesInHrm).innerJoin(userInHrm, eq(authcodesInHrm.userId, userInHrm.id)).where(eq(authcodesInHrm.code, authCode)).limit(1);
+
+        await tx.update(userInHrm).set({
+          f_name : f_name,
+          l_name : l_name,
+          profileComplete: true,
+          role_id : role_id,
+          tenant_id: amdinTenantId.tenantId
+        }).where(eq(userInHrm.id, session.user.id));
+
+      } else {
+        await tx.update(userInHrm).set({
+          f_name : f_name,
+          l_name : l_name,
+          profileComplete: true,
+          role_id : role_id
+        }).where(eq(userInHrm.id, session.user.id));
+      }
 
       return true;
     })

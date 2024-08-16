@@ -3,7 +3,16 @@ import Link from "next/link";
 import { useRecoilValue } from "recoil";
 import { moduleLoadingState, modulesState, ISubMenu } from "atoms/modules-atom";
 import { useEffect, useState } from "react";
-import LoadingDots from "@/components/loading-dots";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { RefreshCw } from 'lucide-react';
+import axios from "axios";
 
 export default function Settings() {
 
@@ -48,10 +57,66 @@ export default function Settings() {
                   </Link>
                 })}
               </>}
+              { card.module_name == "Users" && <AuthCode/>}
             </div>
           </div>
         </>
       })}
     </div>
   );
+}
+
+const AuthCode = () => {
+  const [ authObj, setauthObj ] = useState<{authCode:string, expiresAt:number}>();
+  const [ loading, setLoading ] = useState<boolean>(false);
+  const [ expired, setExpired ] = useState<boolean>(false);
+  const [ time, setTime ] = useState<number>(0);
+
+  useEffect(() => {
+    getAuthCode();
+  },[])
+
+  const getAuthCode = () => {
+    setLoading(true);
+    axios.get("/api/auth/authCode").then(res => {
+      const { authCode, expiresAt } = res.data;
+      const secs = expiresAt - Number(Math.floor(Date.now()/1000))
+      setTime(secs);
+      setauthObj({ authCode, expiresAt });
+      setLoading(false);
+      setExpired(false);
+
+      const interval = setInterval(()=>{
+        setTime((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(interval);
+            setExpired(true);
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      },1000);
+    })
+  }
+
+  return (
+    <Dialog >
+      <DialogTrigger asChild>
+        <Button variant={"ghost"} className="mt-5 w-fit bg-white h-fit border-gray-400 border-2">
+          AuthCode
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="w-1/6">
+        <DialogHeader>
+          <DialogTitle>Auth Code</DialogTitle>
+        </DialogHeader>
+        <div className="flex justify-center items-center">
+          <div className={`text-2xl border-2 border-gray-300 rounded-lg w-fit px-5 ${loading &&'animate-pulse text-gray-500'} ${expired && 'text-red-400'}`}>
+            {authObj? authObj.authCode : "..."}
+          </div>
+          <div className="ml-2">{time}s</div>
+          <Button variant={"icon"} disabled={loading} onClick={getAuthCode}><RefreshCw className={`mx-2  ${loading && 'animate-spin '}`}/></Button>
+        </div>
+      </DialogContent>
+    </Dialog>)
 }

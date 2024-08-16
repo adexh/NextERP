@@ -1,0 +1,1 @@
+ALTER TABLE "hrm"."auth_code" ALTER COLUMN "code" SET DATA TYPE bigint;
