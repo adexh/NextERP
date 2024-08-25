@@ -5,7 +5,7 @@ declare module "next-auth" {
     id: number,
     f_name: string,
     l_name: string | null,
-    role_id: number,
+    role_id: number | null,
     profileComplete: boolean,
     tenant_id: string
   }

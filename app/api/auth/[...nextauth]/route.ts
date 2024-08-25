@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { Adapter } from "next-auth/adapters";
 import { userInHrm, AccountInHrm, SessionInHrm, VerificationTokenInHrm } from "../../../../drizzle/schema";
 import { and, eq } from "drizzle-orm";
+import { createId } from "../../../../drizzle/schema";
 
 export interface GithubEmail extends Record<string, any> {
   email: string
@@ -37,11 +38,13 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
       profile(profile) {
         return {
+          id: profile.id.toString(),
           email: profile.email,
           f_name: profile.name.split(" ")[0] ?? profile.login.split(" ")[0],
           l_name: profile.name.split(" ")[1] ?? profile.login.split(" ")[1],
           role_id: null,
-          profileComplete: false
+          profileComplete: false,
+          tenant_id: createId()
         };
       }
     }),
@@ -72,7 +75,12 @@ export const authOptions: NextAuthOptions = {
 
       if( trigger === 'update' && session?.profileComplete ) {
         console.log("Update triggerd");
-        token.profileComplete = session.profileComplete
+        const [{roleId, f_name, l_name, complete}] = await db.select({f_name:userInHrm.f_name, l_name:userInHrm.l_name ,roleId:userInHrm.role_id, complete: userInHrm.profileComplete}).from(userInHrm).where(eq(userInHrm.email, session.user.email));
+
+        token.profileComplete = complete
+        token.role_id = roleId
+        token.f_name = f_name
+        token.l_name = l_name
         return token;
       }
 
