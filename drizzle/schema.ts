@@ -1,7 +1,7 @@
 import { pgSchema, varchar, timestamp, text, integer, uniqueIndex, foreignKey, serial, boolean, index, uuid, unique, bigint } from "drizzle-orm/pg-core"
 import { init } from '@paralleldrive/cuid2';
 
-const createId = init({
+export const createId = init({
 	length: 10,
 	// A custom fingerprint for the host environment. This is used to help
 	// prevent collisions when generating ids in a distributed system.

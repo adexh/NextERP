@@ -89,7 +89,7 @@ export function ProfileForm() {
     }
     await updateUser();
 
-    await update({...session, f_name:values.f_name, l_name:values.l_name, profileComplete:true });
+    await update({...session, profileComplete:true });
 
     router.push('/');
   }
