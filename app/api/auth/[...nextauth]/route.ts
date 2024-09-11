@@ -84,14 +84,13 @@ export const authOptions: NextAuthOptions = {
 
       if( trigger === 'update' && session.user.profileComplete ) {
         console.log("Update triggerd");
-        token.resticted_modules = await getRestrictedModules(token.role_id as number, token.tenant_id);
-
         const [{roleId, f_name, l_name, complete}] = await db.select({f_name:userInHrm.f_name, l_name:userInHrm.l_name ,roleId:userInHrm.role_id, complete: userInHrm.profileComplete}).from(userInHrm).where(eq(userInHrm.email, session.user.email));
 
         token.profileComplete = complete
         token.role_id = roleId
         token.f_name = f_name
         token.l_name = l_name
+        return token;
       }
 
       if (user) {
