@@ -21,6 +21,7 @@ import toast from "react-hot-toast"
 import { useRouter } from "next/navigation"
 import axios from "axios"
 import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
 
 type PropTypes = {
   role: any
@@ -45,12 +46,13 @@ export function ModulesCheckboxForm({ role }: PropTypes) {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [modulePermissions, setModulePerm] = useState<ModulePermissionType[]>([])
+  const { data:session, update } = useSession();
 
   useEffect(() => {
     if (role) {
       setLoading(true)
       axios.post("/api/permissions/modules/get", { id: role })
-        .then(resp => {
+        .then((resp) => {
           if (resp.status === 200) {
             const modules = transformModulePermissions(resp.data)
             form.reset({ modules })
@@ -79,6 +81,9 @@ export function ModulesCheckboxForm({ role }: PropTypes) {
       .then(resp => {
         if (resp.status === 201) {
           toast.success("Changes Saved")
+          update({...session}).then(()=>{
+            toast.success("Session Updated")
+          })
           router.refresh()
         }
       })
