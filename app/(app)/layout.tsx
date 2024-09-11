@@ -10,7 +10,6 @@ import { authOptions } from "../api/auth/[...nextauth]/route";
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar/sidebar";
 import { Suspense } from "react";
-import prisma from "@/lib/prisma";
 import { headers } from 'next/headers'
 import Unauthorized from "@/components/unauthorized";
 import Loading from "../../components/loading";
@@ -59,7 +58,7 @@ export default async function RootLayout({
               <div className="flex">
                 <Suspense fallback={<Loading />}>
                   <Sidebar />
-                  <div className="bg-gray-100 flex-grow overflow-y-auto overscroll-contain h-[calc(100vh-70px)]">
+                  <div className="bg-gray-200 flex-grow overflow-y-auto overscroll-contain h-[calc(100vh-70px)]">
                     {children}
                     <SpeedInsights />
                     <Analytics />

@@ -5,7 +5,7 @@ import EmailProvider from "next-auth/providers/email";
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import { db } from "@/lib/db";
 import { Adapter } from "next-auth/adapters";
-import { userInHrm, AccountInHrm, SessionInHrm, VerificationTokenInHrm } from "../../../../drizzle/schema";
+import { userInHrm, AccountInHrm, SessionInHrm, VerificationTokenInHrm, role_modules_mapInHrm, modulesInHrm } from "../../../../drizzle/schema";
 import { and, eq } from "drizzle-orm";
 import { createId } from "../../../../drizzle/schema";
 
@@ -14,6 +14,15 @@ export interface GithubEmail extends Record<string, any> {
   primary: boolean
   verified: boolean
   visibility: "public" | "private"
+}
+
+const getRestrictedModules = async (role_id: number, tenant_id: string)=> {
+  const result = await db.select({module: modulesInHrm.module_name})
+  .from(role_modules_mapInHrm)
+  .fullJoin(modulesInHrm, eq(modulesInHrm.id, role_modules_mapInHrm.module_id))
+  .where(and(eq(role_modules_mapInHrm.role_id, role_id), eq(role_modules_mapInHrm.tenant_id, tenant_id)));
+
+  return result.map((item)=> item.module);
 }
 
 export const authOptions: NextAuthOptions = {
@@ -73,7 +82,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, trigger, session }) {
       console.log("JWT Callback");
 
-      if( trigger === 'update' && session?.profileComplete ) {
+      if( trigger === 'update' && session.user.profileComplete ) {
         console.log("Update triggerd");
         const [{roleId, f_name, l_name, complete}] = await db.select({f_name:userInHrm.f_name, l_name:userInHrm.l_name ,roleId:userInHrm.role_id, complete: userInHrm.profileComplete}).from(userInHrm).where(eq(userInHrm.email, session.user.email));
 
@@ -85,16 +94,21 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (user) {
-        return {
-          ...token,
-          id: user.id,
-          f_name: user.f_name,
-          l_name: user.l_name,
-          role_id: user.role_id,
-          tenant_id: user.tenant_id,
-          profileComplete: user.profileComplete
+        let resticted_modules = user.resticted_modules;
+
+        if ( !resticted_modules && user.role_id ) {
+          resticted_modules = await getRestrictedModules(user.role_id, user.tenant_id);
         }
+
+        token.id = user.id as number;
+        token.f_name = user.f_name;
+        token.l_name = user.l_name;
+        token.role_id = user.role_id;
+        token.tenant_id = user.tenant_id;
+        token.profileComplete = user.profileComplete;
+        token.resticted_modules = resticted_modules;
       }
+      
       return token
     },
     async session({ session, token, user }) {
