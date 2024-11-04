@@ -4,9 +4,10 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import hasPermission from "@/lib/utils/api_role_auth";
 import { NextRequest, NextResponse } from "next/server";
 import { modulesInHrm, projectsInHrm, role_modules_mapInHrm, rolesInHrm, userInHrm } from "drizzle/schema";
-import { and, eq, inArray, or } from "drizzle-orm";
+import { and, eq, notExists, } from "drizzle-orm";
 import { Description } from "@radix-ui/react-dialog";
 import { getToken } from "next-auth/jwt";
+import { notEqual } from "assert";
 
 export async function GET(request: NextRequest) {
   const jwt = await getToken({req: request});
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest) {
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
 
-  const projects = await db.select({
+  const projects = await db.selectDistinct({
     id: projectsInHrm.id,
     name: projectsInHrm.name,
     description: projectsInHrm.description,
@@ -23,12 +24,20 @@ export async function GET(request: NextRequest) {
     completion_status: projectsInHrm.completion_status,
     status: projectsInHrm.status
   }).from(projectsInHrm)
-  .fullJoin(role_modules_mapInHrm, eq(role_modules_mapInHrm.role_id, jwt.role_id))
-  .fullJoin(modulesInHrm, eq(modulesInHrm.id, role_modules_mapInHrm.module_id))
+  .leftJoin(userInHrm, eq(userInHrm.id, projectsInHrm.user_id))
   .where(
     and(
       eq(projectsInHrm.user_id, jwt.id),
-      eq(modulesInHrm.module_name, 'Owned Projects')
+      notExists(
+        db.select({id:role_modules_mapInHrm.id}).from(role_modules_mapInHrm)
+        .leftJoin(modulesInHrm, eq(modulesInHrm.id, role_modules_mapInHrm.module_id))
+        .where(
+          and(
+            eq(role_modules_mapInHrm.role_id, userInHrm.role_id),
+            eq(modulesInHrm.module_name, 'Owned Projects')
+          )
+        )
+      )
     )
   )
   
