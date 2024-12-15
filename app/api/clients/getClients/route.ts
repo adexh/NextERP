@@ -1,6 +1,6 @@
-import { getServerSession } from "next-auth/next";
+
 import { db } from "@/lib/db";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { auth } from "@/lib/auth"
 import hasPermission from "@/lib/utils/api_role_auth";
 import { NextRequest } from "next/server";
 import { clientsInHrm } from "drizzle/schema";
@@ -8,7 +8,7 @@ import { arrayOverlaps, eq, inArray } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
   
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if(!session){
     return Response.json({error: 'Unauthorized Access!'}, {status:401})

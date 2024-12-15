@@ -1,3 +1,4 @@
+"use client"
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"
@@ -164,6 +165,13 @@ const FormMessage = React.forwardRef<
 })
 FormMessage.displayName = "FormMessage"
 
+interface FieldContainerProps {
+  children: React.ReactNode;
+}
+const FieldContainer: React.FC<FieldContainerProps> = ({children}) => {
+  return <div className="flex flex-col mr-8 mb-4">{children}</div>
+}
+
 export {
   useFormField,
   Form,
@@ -173,4 +181,5 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  FieldContainer
 }

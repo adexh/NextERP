@@ -1,13 +1,13 @@
 import { db } from "@/lib/db";
 import { eq, and, gt } from "drizzle-orm";
 import { authcodesInHrm, rolesInHrm, userInHrm } from "drizzle/schema";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]/route";
+
+import { auth } from "@/lib/auth"
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if(!session){
     return Response.json({error: 'Unauthorized Access!'}, {status:401})

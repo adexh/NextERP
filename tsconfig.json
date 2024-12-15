@@ -10,7 +10,8 @@
       "@/pages/*": ["pages/*"],
       "@/app/*": ["app/*"],
       "@/lib/*": ["lib/*"],
-      "@/styles/*": ["styles/*"]
+      "@/styles/*": ["styles/*"],
+      "@/drizzle/schema":["drizzle/schema"]
     },
     "strict": true,
     "forceConsistentCasingInFileNames": true,

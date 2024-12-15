@@ -1,12 +1,11 @@
-import { getServerSession } from "next-auth/next";
 import { db } from "@/lib/db";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { auth } from "@/lib/auth";
 import { AllowedModulesSql } from "./allowedModules";
 import { kv } from '@vercel/kv';
 
 export async function GET() {
   console.time("t1");
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   console.timeEnd("t1");
 
   console.time("t2");
@@ -21,12 +20,12 @@ export async function GET() {
   const redisKey = process.env.REDIS_PREFIX + userId+"-"+tenant_id+"-modules";
 
   const cache = await kv.json.get(redisKey);
-  if( cache ) {
-    console.log("from cache");
-    console.timeEnd("t2");
+  // if( cache ) {
+  //   console.log("from cache");
+  //   console.timeEnd("t2");
 
-    return Response.json(cache);
-  }
+  //   return Response.json(cache);
+  // }
 
   const {rows} = await db.execute(AllowedModulesSql(role_id, tenant_id))
 
