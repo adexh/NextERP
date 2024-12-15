@@ -10,7 +10,7 @@ export default async function Projects({ params }: { params: Promise<{ id: strin
   const id = parseInt((await params).id);
   const session = await auth();
 
-  if( !session || !session.user.id ) {
+  if( !session || !session.user.id || isNaN(id) ) {
     return;
   }
 

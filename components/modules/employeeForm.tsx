@@ -116,8 +116,12 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ editable = false, employeeI
 
         Object.keys(projectData).forEach((key) => {
           if (key in formSchema.shape) {
-            const value = (projectData[key] !== null && projectData[key] !== undefined) ? projectData[key].toString() : ''
-            form.setValue(key as keyof z.infer<typeof formSchema>, value);
+            if( key == "projects" ) {
+              form.setValue(key as keyof z.infer<typeof formSchema>, projectData[key]);
+            } else {
+              const value = (projectData[key] !== null && projectData[key] !== undefined) ? projectData[key].toString() : ''
+              form.setValue(key as keyof z.infer<typeof formSchema>, value);
+            }
           }
         });
       }
@@ -345,7 +349,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ editable = false, employeeI
           </div>
         </div>
         <div className="flex justify-end mr-8 mt-8 mb-8">
-          <Button2 label="Onboard" />
+          <Button2 label={ editable ?'Update':'Onboard'} />
         </div>
       </form>
     </Form>

@@ -15,6 +15,9 @@ export default async function Employee({ params }: { params: Promise<{ id: strin
   }
 
   const employee = await getEmployeeById(session.user.id, id);
+
+  //@ts-expect-error
+  employee.projects = employee.projects.map((project: any) => project.value).join(", ");
   
   const rows: { key: keyof typeof employee; label: string }[] = [
     { key: "id", label: "Id" },
@@ -32,6 +35,7 @@ export default async function Employee({ params }: { params: Promise<{ id: strin
     { key: "pincode", label: "Pincode" },
     { key: "doj", label: "Date of Joining" },
     { key: "dob", label: "Date of Birth" },
+    { key: "projects", label: "Projects" }
   ];
 
   return (
@@ -41,7 +45,7 @@ export default async function Employee({ params }: { params: Promise<{ id: strin
       </div>
       <div>
         <DetailsTable 
-          title="Customer Details"
+          title="Employee Details"
           rows={rows}
           dataObject={employee}/>
       </div>

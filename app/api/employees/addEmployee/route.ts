@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth"
 import { Prisma } from "@prisma/client";
 import { NextRequest } from "next/server";
-import { employeesInHrm } from "drizzle/schema";
+import { _employeesToprojectsInHrm, employeesInHrm } from "drizzle/schema";
 
 export async function POST(request: NextRequest) {
   const session = await auth();
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
   try {
 
-     await db.insert(employeesInHrm).values({
+     const [{id}] = await db.insert(employeesInHrm).values({
       first_name: employee.fname,
       last_name: employee.lname,
       contact: parseInt(employee.contact),
@@ -38,7 +38,17 @@ export async function POST(request: NextRequest) {
       salary_id: 1,
       employer_id: session.user.id,
       tenant_id: session.user.tenant_id
+     }).returning({
+      id: employeesInHrm.id
      })
+
+     for( let project of employee.projects ) {
+      await db.insert(_employeesToprojectsInHrm).values({
+        A: id,
+        B: project.id
+       })
+     }
+
   } catch (error) {
     if(error instanceof Prisma.PrismaClientKnownRequestError){
       if(error.code === 'P2002'){

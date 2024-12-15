@@ -1,8 +1,8 @@
 import { db } from "@/lib/db";
 import { sql, and, eq, notExists } from "drizzle-orm";
-import { employeesInHrm, userInHrm, role_modules_mapInHrm, modulesInHrm } from "drizzle/schema";
+import { employeesInHrm, userInHrm, role_modules_mapInHrm, modulesInHrm, _employeesToprojectsInHrm, projectsInHrm } from "drizzle/schema";
 
-export const getEmployeeById = async ( userId:number, clientId: number) => {
+export const getEmployeeById = async ( userId:number, employeeId: number ) => {
   
   const data = await db.select({
     id: employeesInHrm.id,
@@ -25,6 +25,7 @@ export const getEmployeeById = async ( userId:number, clientId: number) => {
     .where(
       and(
         eq(employeesInHrm.employer_id, userId),
+        eq(employeesInHrm.id, employeeId),
         notExists(
           db.select({ id: role_modules_mapInHrm.id }).from(role_modules_mapInHrm)
             .leftJoin(modulesInHrm, eq(modulesInHrm.id, role_modules_mapInHrm.module_id))
@@ -38,5 +39,15 @@ export const getEmployeeById = async ( userId:number, clientId: number) => {
       )
     )
 
-    return data[0];
+    const projectsAssigned = await db.select({
+      id: projectsInHrm.id,
+      value: projectsInHrm.name
+    })
+    .from(projectsInHrm)
+    .innerJoin(_employeesToprojectsInHrm, eq(projectsInHrm.id, _employeesToprojectsInHrm.B))
+    .where(
+      eq(_employeesToprojectsInHrm.A, employeeId)
+    )
+
+    return {...data[0], projects: projectsAssigned};
 }
