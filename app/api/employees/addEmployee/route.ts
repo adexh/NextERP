@@ -1,13 +1,12 @@
 import { getServerSession } from "next-auth/next";
 import { db } from "@/lib/db";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { auth } from "@/lib/auth"
 import { Prisma } from "@prisma/client";
 import { NextRequest } from "next/server";
-import hasPermission from "@/lib/utils/api_role_auth";
 import { employeesInHrm } from "drizzle/schema";
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   
   if(!session){
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
@@ -37,7 +36,8 @@ export async function POST(request: NextRequest) {
       doj: employee.doj? new Date(employee.doj) : new Date(),
       designation: employee.designation,
       salary_id: 1,
-      employer_id: session.user.id
+      employer_id: session.user.id,
+      tenant_id: session.user.tenant_id
      })
   } catch (error) {
     if(error instanceof Prisma.PrismaClientKnownRequestError){

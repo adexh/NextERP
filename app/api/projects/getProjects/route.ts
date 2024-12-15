@@ -1,13 +1,9 @@
-import { getServerSession } from "next-auth/next";
+
 import { db } from "@/lib/db";
-import { authOptions } from "../../auth/[...nextauth]/route";
-import hasPermission from "@/lib/utils/api_role_auth";
 import { NextRequest, NextResponse } from "next/server";
 import { modulesInHrm, projectsInHrm, role_modules_mapInHrm, rolesInHrm, userInHrm } from "drizzle/schema";
 import { and, eq, notExists, } from "drizzle-orm";
-import { Description } from "@radix-ui/react-dialog";
 import { getToken } from "next-auth/jwt";
-import { notEqual } from "assert";
 
 export async function GET(request: NextRequest) {
   const jwt = await getToken({req: request});

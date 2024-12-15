@@ -1,21 +1,17 @@
-import { getServerSession } from "next-auth/next";
+
 import { db } from "@/lib/db";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import { Prisma } from "@prisma/client";
-import hasPermission from "@/lib/utils/api_role_auth";
 import { NextRequest } from "next/server";
 import { clientsInHrm } from "drizzle/schema";
-import { sql } from "drizzle-orm";
+import { getToken } from "next-auth/jwt";
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const jwt = await getToken({req: request});
   
-  if(!session){
+  if(!jwt || jwt.role_id == null || jwt.resticted_modules?.includes("Add Client") ){
     return Response.json({error: 'Unauthorized Access!'}, {status:401})
   }
-  if( session.user.email == null || session.user.email ==undefined ) {
-    return Response.json({error: 'Unauthorized Access!'}, {status:401})
-  }
+
   const user = await request.json();
   console.debug("User from Form : ", user);
 
@@ -33,7 +29,7 @@ export async function POST(request: NextRequest) {
       country: user.country,
       pincode: user.pincode,
       dob: user.dob,
-      service_provider_ids: [session.user.id]
+      service_provider_ids: [jwt.id]
     })
 
   } catch (error) {

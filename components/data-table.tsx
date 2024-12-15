@@ -3,19 +3,30 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Pencil } from 'lucide-react';
+import Link from 'next/link'
 
 interface IColumn {
   key: string;
   label: string;
 }
 
+interface RowUrl {
+  url: string;
+  colId?: string
+  rowId: string;
+  placeholder: string;
+};
+
 interface DataTableProps {
   columns: IColumn[];
   fetchData: () => Promise<any>;
+  editOption: RowUrl;
+  redirects: RowUrl;
   pageSize?: number;
 }
 
-const DataTable = ({ columns, fetchData, pageSize = 4 }: DataTableProps) => {
+const DataTable = ({ columns, fetchData, editOption, redirects, pageSize = 4, }: DataTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState<any[]>([]);
   const [filteredData, setFilteredData] = useState<any[]>([]);
@@ -60,7 +71,7 @@ const DataTable = ({ columns, fetchData, pageSize = 4 }: DataTableProps) => {
 
   const filterHandler = (e: any, index: number) => {
     const filterValue = e.target.value.toLowerCase();
-    const filtered = data.filter((row) => 
+    const filtered = data.filter((row) =>
       row[columns[index].key].toString().toLowerCase().includes(filterValue)
     );
     setFilteredData(filtered);
@@ -91,13 +102,30 @@ const DataTable = ({ columns, fetchData, pageSize = 4 }: DataTableProps) => {
           {paginate(filteredData, pageSize, currentPage).map((row: any) => (
             <TableRow key={row.id} className="odd:bg-gray-100">
               {columns.map((col) => {
-                const value = row[col.key];
+                const value = row[col.key] != null ? row[col.key].toString() : "-"
                 return (
                   <TableCell key={col.key}>
-                    {value !== null ? value.toString() : "-"}
+                    { col.key == redirects.colId ?
+                      <Link
+                        href={redirects.url.replace(redirects.placeholder, row[redirects.rowId])}
+                        className="underline underline-offset-1 hover:text-violet-950"
+                      >
+                        {value}
+                      </Link> 
+                        :
+                      value
+                    }
                   </TableCell>
                 );
               })}
+              <TableCell className="">
+                <Link
+                  className="p-0 hover:scale-110"
+                  href={editOption.url.replace(editOption.placeholder, row[editOption.rowId])}
+                >
+                  <Pencil size={15}/>
+                </Link>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

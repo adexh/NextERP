@@ -1,5 +1,5 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]/route";
+
+import { auth } from "@/lib/auth"
 import { db } from '@/lib/db';
 import { authcodesInHrm } from "drizzle/schema";
 import { eq } from "drizzle-orm";
@@ -45,7 +45,7 @@ async function insertUniqueAuthCode(adminId: number, maxRetries: number = 2): Pr
 }
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const adminId = session?.user.id;
 
   if (!session || !adminId) {

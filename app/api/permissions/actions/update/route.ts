@@ -1,4 +1,4 @@
-import { getServerSession } from "next-auth/next";
+
 import { db } from "@/lib/db";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { and, eq, inArray, sql } from "drizzle-orm";
@@ -6,7 +6,7 @@ import { NextRequest } from "next/server";
 import { actionsRolesInHrm } from "drizzle/schema";
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   const data = await request.json();
 
